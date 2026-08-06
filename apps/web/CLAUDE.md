@@ -72,6 +72,31 @@ tapi kalau mengubahnya, ubah untuk seluruh aplikasi, jangan bikin varian lokal.
 Komponen buatan sendiri ditaruh di `src/components/`, dinamai jelas
 (`TicketStatusBadge`, bukan `Badge2`).
 
+## Ikon
+
+**Pakai `lucide-react`, bukan emoji.** shadcn/ui sendiri berpasangan dengan Lucide
+secara default, jadi ini bukan pilihan tambahan — ikutin apa yang sudah dipakai
+komponen shadcn supaya gaya ikon di seluruh aplikasi seragam.
+
+```bash
+pnpm --filter @helpdesk/web add lucide-react
+```
+
+```tsx
+import { Ticket, Paperclip, CircleAlert } from 'lucide-react';
+
+<Ticket className="size-4" />
+```
+
+Kenapa bukan emoji: renderingnya beda-beda tergantung OS dan font pengguna (emoji
+di Windows bisa terlihat berbeda dari di Mac), tidak bisa diwarnai lewat token
+`currentColor` seperti SVG, dan terasa tidak pas untuk aplikasi kerja internal.
+Lucide juga sudah tersedia lewat `shadcn add` untuk sebagian besar komponen, jadi
+biasanya tidak perlu dicari manual.
+
+**Kecuali:** emoji di dokumentasi (`README.md`, dsb) tidak termasuk aturan ini —
+itu untuk pembaca markdown di GitHub, bukan bagian dari aplikasi.
+
 ## Aturan penulisan komponen
 
 1. **Server Component sebagai default.** Tambahkan `'use client'` hanya kalau butuh
