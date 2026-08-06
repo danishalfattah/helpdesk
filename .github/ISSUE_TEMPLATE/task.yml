@@ -1,0 +1,74 @@
+name: Task Implementasi
+description: Satu task dari rencana di docs/plans/
+title: "[Tahap N] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Satu Task di rencana = satu Issue = satu branch = satu PR.
+        Jangan menggabungkan dua task ke satu issue.
+
+  - type: dropdown
+    id: kelompok
+    attributes:
+      label: Dikerjakan oleh
+      options:
+        - Kelompok 1 (Bagas, Alia) — apps/api
+        - Kelompok 2 (Danish, Farah) — apps/web
+        - Bersama — packages/contract atau fondasi
+    validations:
+      required: true
+
+  - type: input
+    id: rencana
+    attributes:
+      label: Rujukan rencana
+      description: Berkas rencana dan nomor task
+      placeholder: docs/plans/2026-08-06-tahap-0-fondasi.md — Task 4
+    validations:
+      required: true
+
+  - type: textarea
+    id: tujuan
+    attributes:
+      label: Tujuan
+      description: Satu kalimat. Apa yang jadi setelah issue ini selesai?
+    validations:
+      required: true
+
+  - type: textarea
+    id: langkah
+    attributes:
+      label: Langkah
+      description: Salin checkbox langkah dari rencana. Centang sambil mengerjakan.
+      placeholder: |
+        - [ ] Langkah 1: ...
+        - [ ] Langkah 2: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: berkas
+    attributes:
+      label: Berkas yang disentuh
+      placeholder: |
+        - Buat: apps/api/src/auth/auth.service.ts
+        - Uji: apps/api/src/auth/auth.service.test.ts
+
+  - type: textarea
+    id: bergantung
+    attributes:
+      label: Bergantung pada
+      description: Issue lain yang harus selesai lebih dulu. Kosongkan kalau tidak ada.
+      placeholder: "#3, #5"
+
+  - type: checkboxes
+    id: selesai
+    attributes:
+      label: Definisi selesai
+      options:
+        - label: "`pnpm -r test` lulus"
+        - label: "`pnpm -r typecheck` bersih"
+        - label: Perilaku barunya punya test
+        - label: Sudah dicoba manual di browser (kalau menyentuh UI)

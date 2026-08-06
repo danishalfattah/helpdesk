@@ -3,11 +3,20 @@
 Sistem helpdesk pengganti osTicket untuk PT Socfindo. Dikerjakan sebagai PKL
 mahasiswa FILKOM Universitas Brawijaya.
 
-## Dokumen utama
+## Dokumen
 
-📄 **[Spesifikasi desain](docs/specs/2026-08-06-desain-helpdesk.md)** — baca ini dulu.
-Berisi seluruh keputusan arsitektur beserta alasannya, alternatif yang ditolak,
-dan urutan pengerjaan.
+| Dokumen | Isi |
+|---|---|
+| 📄 **[Spesifikasi desain](docs/specs/2026-08-06-desain-helpdesk.md)** | **Baca ini dulu.** Seluruh keputusan arsitektur + alasannya |
+| 📖 [Glosarium](docs/glosarium.md) | **Nama entitas yang benar.** Baca sebelum menamai apa pun |
+| 🧭 [ADR](docs/adr/) | Keputusan arsitektur satuan + alternatif yang ditolak |
+| 🔍 [Temuan osTicket](docs/temuan/) | Fitur yang terpakai, cacat desain yang diperbaiki |
+| 🛠 [Rencana Tahap 0](docs/plans/2026-08-06-tahap-0-fondasi.md) | 10 task, 95 langkah TDD |
+| 🎫 [Issue Tahap 0](docs/issues-tahap-0.md) | Siap ditempel ke GitHub + peta ketergantungan |
+| ❓ [Pertanyaan tim IT](docs/pertanyaan-tim-it.md) | Ketergantungan terbuka yang memblokir |
+| 🤝 [CONTRIBUTING](CONTRIBUTING.md) | Alur issue → branch → PR |
+
+Konvensi kode ada di `CLAUDE.md` — di root dan di tiap paket.
 
 ## Stack
 

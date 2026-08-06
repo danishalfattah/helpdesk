@@ -1,0 +1,109 @@
+# apps/api — Backend (Kelompok 1: Bagas, Alia)
+
+NestJS 11 + Prisma 7 + SQL Server 2022.
+
+## Pola modul
+
+Tiap domain jadi satu folder di `src/`, isinya selalu bentuk yang sama:
+
+```
+src/ticket/
+├── ticket.module.ts       merangkai
+├── ticket.controller.ts   HTTP saja — tanpa logika bisnis
+├── ticket.service.ts      seluruh logika bisnis
+└── ticket.service.test.ts test untuk aturan bisnisnya
+```
+
+**Ikuti bentuk ini walaupun terasa berlebihan untuk modul kecil.** Keseragaman itu
+yang membuat kode hasil generate AI tetap konsisten sepanjang sebulan.
+
+## Pembagian tanggung jawab yang tidak boleh kabur
+
+| Lapisan | Menjawab | Tidak boleh |
+|---|---|---|
+| **Guard** | "Boleh tidak melakukan aksi ini?" | Menyentuh data |
+| **Controller** | Menerima HTTP, memanggil service | Berisi `if` aturan bisnis |
+| **Service** | "Boleh tidak menyentuh baris ini?" + seluruh aturan bisnis | Tahu soal HTTP |
+
+Service **tidak boleh** meng-import apa pun dari `express` atau melempar
+`HttpException`. Kalau service perlu menolak sesuatu, lempar `DomainError`:
+
+```ts
+throw new DomainError(ErrorCode.TICKET_CLOSED, 'Tiket sudah ditutup. Buka kembali sebelum membalas.', 409);
+```
+
+`GlobalExceptionFilter` yang menerjemahkannya jadi HTTP. Ini yang membuat service
+bisa diuji tanpa menyalakan server.
+
+## Aturan bisnis ditegakkan di service, bukan UI
+
+Ini pelajaran mahal dari osTicket. Komentar aslinya:
+
+> *UI only — enforce it here too so a direct POST can't reply to a ticket marked done.*
+
+Form yang disembunyikan di web **bukan** penegakan aturan. Siapa pun bisa mengirim
+POST langsung. Setiap aturan bisnis wajib punya pemeriksaan di service, dan setiap
+pemeriksaan itu wajib punya test.
+
+## Prisma
+
+**Skema dipecah per domain** supaya dua orang bisa menambah model bersamaan tanpa
+konflik git:
+
+```
+prisma/
+├── schema.prisma       generator + datasource SAJA
+└── models/
+    ├── agent.prisma
+    ├── ticket.prisma
+    └── department.prisma
+```
+
+Aturan khusus SQL Server (spec §3) — bukan pilihan gaya, ini keterbatasan engine:
+
+| Aturan | Alasan |
+|---|---|
+| Semua relasi pakai `onDelete: NoAction` | SQL Server tidak mendukung `RESTRICT` |
+| Jangan pakai `enum` Prisma | Tidak didukung SQL Server — pakai tabel lookup |
+| Jangan pakai tipe `Json` | Tidak didukung — pakai `String @db.NVarChar(Max)` + parse Zod |
+| Kolom teks pakai `@db.NVarChar(n)` | Tanpa ini defaultnya `VarChar`, dan teks Indonesia bisa rusak |
+
+Setiap perubahan skema wajib disertai migrasi:
+
+```bash
+pnpm --filter @helpdesk/api exec prisma migrate dev --name tambah-kolom-anu
+```
+
+**Jangan pernah mengedit berkas migrasi yang sudah di-commit.** Mesin orang lain
+mungkin sudah menjalankannya.
+
+## Query hanya lewat PrismaService
+
+Tidak ada `new PrismaClient()` di mana pun selain `PrismaService` dan `prisma/seed.ts`.
+Instance ganda berarti connection pool ganda.
+
+## Test
+
+```bash
+pnpm --filter @helpdesk/api test              # semua
+pnpm --filter @helpdesk/api test auth.service # satu berkas
+```
+
+**Yang wajib diuji:**
+- Setiap aturan bisnis di service — termasuk jalur penolakannya
+- Setiap Guard — kasus lolos dan kasus ditolak
+- Setiap skema validasi yang punya perilaku khusus
+
+**Yang tidak perlu diuji:** getter, setter, pemanggilan Prisma yang cuma meneruskan.
+Jangan mengejar angka coverage — angka tinggi dari test yang menguji hal sepele itu
+menipu diri sendiri.
+
+Service diuji dengan Prisma palsu (`vi.fn()`), bukan database sungguhan. Test harus
+cepat dan tidak bergantung pada keadaan database.
+
+## Catatan Vitest
+
+Vitest di sini memakai `unplugin-swc`, bukan esbuild bawaan. Alasannya esbuild tidak
+mendukung `emitDecoratorMetadata`, padahal dependency injection NestJS bergantung
+penuh padanya. **Jangan mengubah `vitest.config.ts`** kecuali paham konsekuensinya —
+gejalanya semua test gagal dengan error DI yang tidak jelas asalnya.

@@ -74,7 +74,9 @@ helpdesk/
 │   ├── vitest.config.ts               + unplugin-swc
 │   ├── nest-cli.json
 │   ├── prisma/
-│   │   ├── schema.prisma
+│   │   ├── schema.prisma          generator + datasource SAJA
+│   │   ├── models/
+│   │   │   └── agent.prisma       satu domain, satu berkas
 │   │   └── seed.ts
 │   └── src/
 │       ├── main.ts
@@ -655,10 +657,16 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Langkah 5: Buat `apps/api/prisma/schema.prisma`**
+- [ ] **Langkah 5a: Buat `apps/api/prisma/schema.prisma`**
 
-Catatan SQL Server: tidak ada `enum` native, jadi Role dan Permission memang tabel
-lookup — itu sesuai kebutuhan karena admin bisa mengubahnya (spec §5.1).
+Skema **dipecah per domain**. Berkas ini hanya berisi `generator` dan `datasource` —
+tidak ada model sama sekali.
+
+Alasannya bukan kerapian, melainkan kerja paralel: Bagas dan Alia akan sering
+menambah model bersamaan, dan satu berkas skema berarti konflik git berulang.
+Satu berkas per domain menghilangkan konflik itu sepenuhnya. Skema multi-berkas
+sudah GA di Prisma 7 (bukan preview lagi), dan menerapkannya nanti setelah ada
+migrasi jauh lebih repot.
 
 ```prisma
 generator client {
@@ -670,7 +678,18 @@ datasource db {
   provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
+```
 
+- [ ] **Langkah 5b: Buat `apps/api/prisma/models/agent.prisma`**
+
+Semua model Tahap 0 masuk satu berkas karena semuanya satu domain (identitas).
+Tahap berikutnya menambah `models/ticket.prisma`, `models/department.prisma`, dan
+seterusnya — **satu domain, satu berkas.**
+
+Catatan SQL Server: tidak ada `enum` native, jadi Role dan Permission memang tabel
+lookup — itu sesuai kebutuhan karena admin bisa mengubahnya (spec §5.1).
+
+```prisma
 model Agent {
   id           Int      @id @default(autoincrement())
   email        String   @unique @db.NVarChar(255)
