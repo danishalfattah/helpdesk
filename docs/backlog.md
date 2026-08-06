@@ -66,7 +66,7 @@ Badan issue lengkapnya di [`issues-tahap-0.md`](issues-tahap-0.md).
 
 | # | Judul | Assignee | Bergantung |
 |---|---|---|---|
-| 1 | Fondasi monorepo pnpm workspace | Bagas | — |
+| 1 | Fondasi monorepo pnpm workspace | Danish | — |
 | 2 | Skema Zod login dan bentuk error seragam | Danish | #1 |
 | 3 | Siapkan SQL Server 2022 Express | Alia | — |
 | 4 | Bootstrap NestJS dengan Prisma ke SQL Server | Bagas | #1, #2, #3 |

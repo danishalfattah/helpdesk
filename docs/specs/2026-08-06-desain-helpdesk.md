@@ -126,8 +126,14 @@ dan di-backup. Perusahaan ini Microsoft shop: IIS, Windows Server, SQL Server.
 Bonus: sisa data 2 tahun yang belum termigrasi ada di SQL Server, sehingga migrasi
 susulan menjadi SQL Server → SQL Server.
 
-**Syarat minimum SQL Server 2017** (batas Prisma). Versi yang diminta: **2022**.
-Lihat §13 — ini ketergantungan terbuka yang belum terjawab.
+**Versi yang dipakai: SQL Server 2022** (kode internal 16). Ini keputusan, bukan
+batas minimum — seluruh tim memakai versi yang sama supaya perilaku database di
+empat laptop identik. Bug yang hanya muncul di satu mesin karena beda versi adalah
+yang paling melelahkan untuk dilacak.
+
+Prisma sendiri menerima 2017 ke atas, tapi keseragaman lebih berharga daripada
+kelonggaran. Yang masih perlu dikonfirmasi: apakah server perusahaan juga
+menjalankan 2022 — lihat §13.
 
 Keterbatasan Prisma + SQL Server dan penanganannya:
 

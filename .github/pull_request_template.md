@@ -1,5 +1,11 @@
 Closes #
 
+<!-- Isi baris ini HANYA kalau yang mengerjakan bukan assignee issue-nya sendiri,
+     misalnya membantu pekerjaan teman. Kosongkan/hapus kalau assignee dan
+     pengerja sama. Jangan mengubah identitas commit untuk berpura-pura jadi
+     assignee — lihat CLAUDE.md bagian "Sebelum mulai mengerjakan apa pun". -->
+Dikerjakan oleh: <!-- nama --> · membantu issue milik: <!-- nama assignee -->
+
 ## Apa yang berubah
 
 <!-- Satu-dua kalimat. Apa yang sekarang bisa dilakukan yang sebelumnya tidak? -->

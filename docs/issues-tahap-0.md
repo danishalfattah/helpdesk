@@ -46,18 +46,22 @@ berpindah tangan, ubah di GitHub, jangan mengedit dokumen ini.
 
 | Orang | Issue | Jumlah |
 |---|---|---|
-| **Bagas** | #1, #4, #7, #9 | 4 |
+| **Bagas** | #4, #7, #9 | 3 |
 | **Alia** | #3, #5, #6, #8 | 4 |
-| **Danish** | #2, #10 | 2 |
+| **Danish** | #1, #2, #10 | 3 |
 | **Farah** | #11 | 1 |
 
 Alasan pembagiannya:
 
-- **#1 dan #3 dipisah** ke Bagas dan Alia karena keduanya tidak saling bergantung —
-  hari pertama dua orang langsung bergerak, bukan satu menunggu satu.
+- **#1 dan #2 ke Danish**, dikerjakan lebih dulu sebelum repo dibagikan ke tim.
+  Alasannya bukan pembagian beban, melainkan waktu: keduanya rantai berurutan yang
+  tidak bisa dipotong, dan selama belum ada, tiga orang lain clone repo tanpa
+  menemukan apa pun untuk dikerjakan. **Begitu #2 di-push, semua orang langsung
+  punya pekerjaan.**
+- **#3 jalan bersamaan dengan #1** — tidak saling bergantung, dan sekaligus
+  membuktikan `docs/setup-lokal.md` benar-benar bisa diikuti orang lain.
 - **#4 ke Bagas** karena ini task backend tersulit (tiga jebakan lingkungan sekaligus)
-  dan memblokir semua issue backend lain. Sementara Bagas mengerjakannya, Alia sudah
-  selesai #3 dan bisa membantu review #2.
+  dan memblokir #5, #6, #7, #9.
 - **#5 dan #6 ke Alia, #9 ke Bagas** — ketiganya paralel begitu #4 selesai.
 - **#7 dan #8 dipisah** supaya dua orang sama-sama menyentuh bagian keamanan. Ini
   bukan cuma soal beban: keduanya perlu paham autentikasi untuk tahap berikutnya.
@@ -84,7 +88,7 @@ di awal Tahap 2, saat beban bergeser ke sisi web.
 
 ## #1 — Fondasi monorepo pnpm workspace
 
-**Label:** `bersama` `tahap-0` · **Rujukan:** Task 1 · **Bergantung:** — · **Assignee:** Bagas
+**Label:** `bersama` `tahap-0` · **Rujukan:** Task 1 · **Bergantung:** — · **Assignee:** Danish
 
 Menyiapkan workspace pnpm supaya ketiga paket bisa saling mengenal.
 

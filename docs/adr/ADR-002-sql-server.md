@@ -22,7 +22,11 @@ Sementara SQL Server jelas sudah dijalankan perusahaan: `AP14002604` (sumber mig
 
 ## Keputusan
 
-**SQL Server**, lewat Prisma provider `sqlserver`. Menunggu konfirmasi instance & kredensial dev dari tim IT — lihat [Pertanyaan untuk tim IT](../pertanyaan-tim-it.md).
+**SQL Server 2022**, lewat Prisma provider `sqlserver`.
+
+Versinya dipatok, bukan sekadar "2017 ke atas". Seluruh tim memakai 2022 supaya perilaku database di empat laptop identik — bug yang hanya muncul di satu mesin karena beda versi adalah yang paling mahal untuk dilacak. Panduan setup juga jadi lebih sederhana karena kode registry `MSSQL16` berlaku untuk semua orang.
+
+SQL Server 2022 didukung sampai 2033, jauh melewati umur project ini. Yang masih perlu dikonfirmasi: apakah server perusahaan juga menjalankan 2022 — lihat [Pertanyaan untuk tim IT](../pertanyaan-tim-it.md).
 
 ## Keterbatasan Prisma + SQL Server dan cara menanganinya
 

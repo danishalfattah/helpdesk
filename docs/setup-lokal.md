@@ -13,7 +13,7 @@ Perkiraan waktu: 20–30 menit, sebagian besar menunggu unduhan.
 |---|---|---|
 | Node.js | 24.x | `node -v` |
 | pnpm | 11.x | `pnpm -v` |
-| SQL Server | **2017 ke atas** | lihat langkah 3 |
+| SQL Server | **2022** (bukan versi lain) | lihat langkah 3 |
 | Git | apa saja | `git --version` |
 
 Kalau Node belum ada, unduh **LTS 24** dari [nodejs.org](https://nodejs.org).
@@ -23,11 +23,16 @@ Lalu pasang pnpm:
 npm install -g pnpm@11.20.0
 ```
 
-**SQL Server**: pakai **Developer Edition** atau **Express Edition** — dua-duanya
-gratis, unduh dari
+**SQL Server 2022** — pakai **Developer Edition** atau **Express Edition**,
+dua-duanya gratis. Unduh dari
 [microsoft.com/sql-server/sql-server-downloads](https://www.microsoft.com/sql-server/sql-server-downloads).
 Express cukup untuk pengembangan (batas 10 GB per database, jauh di atas kebutuhan
 kita).
+
+⚠️ **Pakai 2022, bukan versi lain.** Seluruh tim memakai versi yang sama supaya
+perilaku database di empat laptop identik — bug yang cuma muncul di satu mesin karena
+beda versi itu paling melelahkan untuk dilacak. Panduan ini juga memakai kode registry
+`MSSQL16` yang khusus untuk 2022.
 
 Saat instalasi, pilih **Mixed Mode Authentication** kalau ditawarkan — itu menghemat
 langkah 3b.
@@ -67,8 +72,8 @@ Cek juga versinya:
 & sqlcmd -S "localhost\SQLEXPRESS" -E -Q "SELECT SERVERPROPERTY('ProductVersion'), SERVERPROPERTY('Edition');" -h -1 -W
 ```
 
-Angka depan harus **14 atau lebih** (14 = 2017, 15 = 2019, 16 = 2022, 17 = 2025).
-Kalau di bawah itu, Prisma tidak akan jalan — pasang versi yang lebih baru.
+Angka depan **harus `16`** (16 = SQL Server 2022). Kalau bukan 16, pasang 2022 —
+jangan dilanjutkan dengan versi lain.
 
 ### 3b. Aktifkan TCP/IP dan Mixed Mode
 
@@ -76,8 +81,9 @@ Kalau di bawah itu, Prisma tidak akan jalan — pasang versi yang lebih baru.
 TCP/IP. `sqlcmd` tetap jalan karena memakai Shared Memory, tapi **Prisma butuh TCP** —
 dan errornya cuma "Can't reach database server" tanpa petunjuk apa pun.
 
-Ganti `MSSQL16.SQLEXPRESS` sesuai versi dan instance kalian
-(`MSSQL15.*` untuk 2019, `MSSQL16.*` untuk 2022, `MSSQL17.*` untuk 2025):
+`MSSQL16` sudah benar untuk SQL Server 2022. Yang perlu disesuaikan hanya nama
+instance-nya — ganti `SQLEXPRESS` jadi `MSSQLSERVER` kalau kalian memakai instance
+default:
 
 ```powershell
 $inst = "MSSQL16.SQLEXPRESS"
