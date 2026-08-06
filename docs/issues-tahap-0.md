@@ -1,6 +1,6 @@
 # Issue Tahap 0 — siap ditempel ke GitHub
 
-Sepuluh issue dari `docs/plans/2026-08-06-tahap-0-fondasi.md`.
+Sebelas issue dari `docs/plans/2026-08-06-tahap-0-fondasi.md`.
 Langkah rincinya ada di rencana — salin checkbox-nya ke badan issue saat membuat.
 
 ## Peta ketergantungan
