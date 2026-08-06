@@ -25,6 +25,34 @@ Label wajib:
 | `tahap-0` … `tahap-6` | Tahap di spec §11 |
 | `blocked` | Sedang menunggu sesuatu — **sebutkan menunggu apa di komentar** |
 
+## Siapa mengerjakan apa
+
+**Setiap issue punya satu assignee.** Bukan dua, bukan "kelompok 1" — satu orang
+yang bertanggung jawab. Kalau dua orang mengerjakan bersama, tetap satu yang
+jadi assignee dan yang lain disebut di komentar.
+
+| Bagian | Orang | Aturan pembagian |
+|---|---|---|
+| `apps/api` | Bagas, Alia | Bergantian, seimbangkan beban dan tingkat kesulitan |
+| `apps/web` | Danish, Farah | Yang lebih sulit ke Danish |
+| `packages/contract` | siapa pun | Ditulis satu orang, **di-review satu orang tiap kelompok** |
+
+**Field assignee di GitHub adalah catatan yang berlaku** — bukan tabel di dokumen
+mana pun. Kalau pekerjaan berpindah tangan, ubah assignee-nya, jangan mengedit
+dokumen.
+
+### Dua hal yang perlu dijaga
+
+**Jangan menumpuk task yang saling bergantung pada satu orang.** Kalau A mengerjakan
+issue yang memblokir tiga issue lain, dan ketiganya juga milik A, maka tiga issue itu
+antre — padahal bisa dikerjakan orang lain sementara A menyelesaikan yang pertama.
+Lihat peta ketergantungan di `docs/issues-tahap-0.md`.
+
+**Perhatikan keseimbangan lintas tahap, bukan per tahap.** Tahap 0 memang berat di
+backend — fondasi API, database, autentikasi. Sisi web baru padat mulai Tahap 2.
+Yang penting seimbang di akhir, bukan di tiap tahap. Riwayat commit ikut jadi bukti
+kontribusi untuk penilaian PKL, jadi ini bukan soal keadilan semata.
+
 ## Branch
 
 ```

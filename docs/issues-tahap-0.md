@@ -38,11 +38,53 @@ Gelombang 6                            [#10 Web: sambungkan ke API sungguhan]
 - **#5, #6, dan #9 tidak saling bergantung.** Kalau Bagas dan Alia kerja bersamaan,
   ini titik paling menguntungkan untuk membagi.
 
+## Pembagian awal
+
+Ini **usulan untuk mengisi field assignee saat membuat issue**. Setelah issue dibuat,
+**field assignee di GitHub yang jadi pegangan** — bukan tabel ini. Kalau pekerjaan
+berpindah tangan, ubah di GitHub, jangan mengedit dokumen ini.
+
+| Orang | Issue | Jumlah |
+|---|---|---|
+| **Bagas** | #1, #4, #7, #9 | 4 |
+| **Alia** | #3, #5, #6, #8 | 4 |
+| **Danish** | #2, #10 | 2 |
+| **Farah** | #11 | 1 |
+
+Alasan pembagiannya:
+
+- **#1 dan #3 dipisah** ke Bagas dan Alia karena keduanya tidak saling bergantung —
+  hari pertama dua orang langsung bergerak, bukan satu menunggu satu.
+- **#4 ke Bagas** karena ini task backend tersulit (tiga jebakan lingkungan sekaligus)
+  dan memblokir semua issue backend lain. Sementara Bagas mengerjakannya, Alia sudah
+  selesai #3 dan bisa membantu review #2.
+- **#5 dan #6 ke Alia, #9 ke Bagas** — ketiganya paralel begitu #4 selesai.
+- **#7 dan #8 dipisah** supaya dua orang sama-sama menyentuh bagian keamanan. Ini
+  bukan cuma soal beban: keduanya perlu paham autentikasi untuk tahap berikutnya.
+- **#10 ke Danish** karena ini frontend tersulit — memasang Next.js, shadcn, klien
+  API, dan halaman pertama sekaligus.
+
+### ⚠️ Tahap 0 memang berat sebelah, dan itu wajar
+
+Farah cuma dapat satu issue. Itu bukan kesalahan pembagian — **Tahap 0 hampir
+seluruhnya fondasi backend**, dan sisi web baru padat mulai Tahap 2 ke atas.
+
+Supaya tidak menganggur, Farah bisa mengambil pekerjaan yang tidak butuh issue formal:
+
+- menyiapkan mock MSW dari skema Zod begitu #2 selesai, supaya #10 bisa jalan tanpa API
+- mendata komponen shadcn yang dibutuhkan Tahap 2 (tabel tiket, dialog, dropdown)
+- mengambil tangkapan layar osTicket lama dari `docs/qa/screenshots/` sebagai
+  pembanding untuk bab perancangan antarmuka di laporan
+
+Yang perlu dijaga: **keseimbangan di akhir project, bukan di tiap tahap.** Riwayat
+commit ikut jadi bukti kontribusi untuk penilaian PKL — periksa ulang pembagian ini
+di awal Tahap 2, saat beban bergeser ke sisi web.
+
 ---
 
 ## #1 — Fondasi monorepo pnpm workspace
 
-**Label:** `bersama` `tahap-0` · **Rujukan:** Task 1 · **Bergantung:** —
+**Label:** `bersama` `tahap-0` · **Rujukan:** Task 1 · **Bergantung:** — · **Assignee:** Bagas
 
 Menyiapkan workspace pnpm supaya ketiga paket bisa saling mengenal.
 
@@ -55,7 +97,7 @@ Menyiapkan workspace pnpm supaya ketiga paket bisa saling mengenal.
 
 ## #2 — Skema Zod login dan bentuk error seragam
 
-**Label:** `bersama` `tahap-0` · **Rujukan:** Task 2 · **Bergantung:** #1
+**Label:** `bersama` `tahap-0` · **Rujukan:** Task 2 · **Bergantung:** #1 · **Assignee:** Danish
 
 Paket kontrak dengan skema pertama. Bentuk berkas di sini jadi contoh untuk semua
 kontrak berikutnya — kerjakan cermat.
@@ -71,7 +113,7 @@ kontrak berikutnya — kerjakan cermat.
 
 ## #3 — Siapkan SQL Server 2022 Express
 
-**Label:** `bersama` `tahap-0` · **Rujukan:** Task 3 · **Bergantung:** —
+**Label:** `bersama` `tahap-0` · **Rujukan:** Task 3 · **Bergantung:** — · **Assignee:** Alia
 
 Konfigurasi mesin, bukan kode. **Butuh PowerShell sebagai Administrator.**
 
@@ -85,7 +127,7 @@ Konfigurasi mesin, bukan kode. **Butuh PowerShell sebagai Administrator.**
 
 ## #4 — Bootstrap NestJS dengan Prisma ke SQL Server
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 4 · **Bergantung:** #1, #2, #3
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 4 · **Bergantung:** #1, #2, #3 · **Assignee:** Bagas
 
 - `apps/api` + NestJS + konfigurasi Vitest dengan **`unplugin-swc`**
 - Skema Prisma **multi-berkas**: `prisma/schema.prisma` + `prisma/models/*.prisma`
@@ -100,7 +142,7 @@ Konfigurasi mesin, bukan kode. **Butuh PowerShell sebagai Administrator.**
 
 ## #5 — Pipe validasi Zod dan filter error global
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 5 · **Bergantung:** #4
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 5 · **Bergantung:** #4 · **Assignee:** Alia
 
 - `ZodValidationPipe` — memetakan error Zod ke `fields` per nama field
 - `DomainError` — error aturan bisnis, tanpa tahu soal HTTP
@@ -113,7 +155,7 @@ Stack trace tidak boleh pernah keluar ke klien.
 
 ## #6 — PasswordService dengan argon2id
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 6 · **Bergantung:** #4
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 6 · **Bergantung:** #4 · **Assignee:** Alia
 
 Bisa dikerjakan bersamaan dengan #5 dan #9.
 
@@ -124,7 +166,7 @@ Bisa dikerjakan bersamaan dengan #5 dan #9.
 
 ## #7 — Endpoint login dan logout dengan sesi cookie
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 7 · **Bergantung:** #5, #6
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 7 · **Bergantung:** #5, #6 · **Assignee:** Bagas
 
 - `SessionService` — sesi disimpan di tabel, TTL 30 menit
 - `AuthService.login()` dengan penguncian akun: 4 gagal → terkunci 2 menit
@@ -141,7 +183,7 @@ supaya tidak bisa dipakai menebak email mana yang terdaftar.
 
 ## #8 — PermissionGuard berbasis Role dan endpoint /auth/me
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 8 · **Bergantung:** #7
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 8 · **Bergantung:** #7 · **Assignee:** Alia
 
 - `@RequirePermission('...')` + `PermissionGuard`
 - `GET /auth/me` yang dijaga guard
@@ -155,7 +197,7 @@ mekanisme berbeda (spec §6).
 
 ## #9 — Seed role Administrator dan agent admin
 
-**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 9 · **Bergantung:** #4
+**Label:** `kelompok-1` `tahap-0` · **Rujukan:** Task 9 · **Bergantung:** #4 · **Assignee:** Bagas
 
 Bisa dikerjakan bersamaan dengan #5 dan #6.
 
@@ -166,7 +208,7 @@ Bisa dikerjakan bersamaan dengan #5 dan #6.
 
 ## #10 — Halaman login dan beranda (walking skeleton)
 
-**Label:** `kelompok-2` `tahap-0` · **Rujukan:** Task 10 · **Bergantung:** #2 (mulai), #7 + #8 (selesai)
+**Label:** `kelompok-2` `tahap-0` · **Rujukan:** Task 10 · **Bergantung:** #2 (mulai), #7 + #8 (selesai) · **Assignee:** Danish
 
 Ini yang membuktikan seluruh rantai teknis jalan.
 
@@ -193,7 +235,7 @@ Kalau tabel ini lulus semua, **Tahap 0 selesai.**
 
 ## #11 — Halaman /design-system
 
-**Label:** `kelompok-2` `tahap-0` · **Rujukan:** Task 11 · **Bergantung:** #10 (setelah shadcn siap)
+**Label:** `kelompok-2` `tahap-0` · **Rujukan:** Task 11 · **Bergantung:** #10 (setelah shadcn siap) · **Assignee:** Farah
 
 Panduan gaya hidup yang merender komponen sungguhan dengan token sungguhan.
 

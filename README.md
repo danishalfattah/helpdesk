@@ -7,12 +7,14 @@ mahasiswa FILKOM Universitas Brawijaya.
 
 | Dokumen | Isi |
 |---|---|
+| 🚀 **[Setup di mesin sendiri](docs/setup-lokal.md)** | **Mulai dari sini.** Dijalankan tiap orang di laptop masing-masing |
 | 📄 **[Spesifikasi desain](docs/specs/2026-08-06-desain-helpdesk.md)** | **Baca ini dulu.** Seluruh keputusan arsitektur + alasannya |
 | 📖 [Glosarium](docs/glosarium.md) | **Nama entitas yang benar.** Baca sebelum menamai apa pun |
 | 🧭 [ADR](docs/adr/) | Keputusan arsitektur satuan + alternatif yang ditolak |
 | 🔍 [Temuan osTicket](docs/temuan/) | Fitur yang terpakai, cacat desain yang diperbaiki |
-| 🛠 [Rencana Tahap 0](docs/plans/2026-08-06-tahap-0-fondasi.md) | 10 task, 95 langkah TDD |
-| 🎫 [Issue Tahap 0](docs/issues-tahap-0.md) | Siap ditempel ke GitHub + peta ketergantungan |
+| 🗺 **[Backlog](docs/backlog.md)** | **61 issue, Tahap 0–6.** Peta pekerjaan sampai selesai |
+| 🛠 [Rencana Tahap 0](docs/plans/2026-08-06-tahap-0-fondasi.md) | 11 task, langkah TDD rinci |
+| 🎫 [Issue Tahap 0](docs/issues-tahap-0.md) | Badan issue #1–#11, siap ditempel |
 | ❓ [Pertanyaan tim IT](docs/pertanyaan-tim-it.md) | Ketergantungan terbuka yang memblokir |
 | 🤝 [CONTRIBUTING](CONTRIBUTING.md) | Alur issue → branch → PR |
 
