@@ -7,8 +7,9 @@ mahasiswa FILKOM Universitas Brawijaya.
 
 | Dokumen | Isi |
 |---|---|
-| 🚀 **[Setup di mesin sendiri](docs/setup-lokal.md)** | **Mulai dari sini.** Dijalankan tiap orang di laptop masing-masing |
-| 📄 **[Spesifikasi desain](docs/specs/2026-08-06-desain-helpdesk.md)** | **Baca ini dulu.** Seluruh keputusan arsitektur + alasannya |
+| 🚀 **[MULAI-DI-SINI.md](MULAI-DI-SINI.md)** | **Anggota tim, mulai dari sini.** Cara kerja + daftar issue kamu per nama |
+| 🚀 [Setup di mesin sendiri](docs/setup-lokal.md) | Dijalankan tiap orang di laptop masing-masing |
+| 📄 **[Spesifikasi desain](docs/specs/2026-08-06-desain-helpdesk.md)** | Seluruh keputusan arsitektur + alasannya |
 | 📖 [Glosarium](docs/glosarium.md) | **Nama entitas yang benar.** Baca sebelum menamai apa pun |
 | 🧭 [ADR](docs/adr/) | Keputusan arsitektur satuan + alternatif yang ditolak |
 | 🔍 [Temuan osTicket](docs/temuan/) | Fitur yang terpakai, cacat desain yang diperbaiki |
@@ -27,7 +28,7 @@ Konvensi kode ada di `CLAUDE.md` — di root dan di tiap paket.
 | Runtime | Node.js 24.13.0, pnpm 11.20.0 |
 | Bahasa | TypeScript 6.0.3 |
 | API | NestJS 11 + Prisma 7 |
-| Database | SQL Server (minimum 2017) |
+| Database | SQL Server 2022 |
 | Web | Next.js 16 + React 19 + Tailwind 4 |
 | Kontrak | Zod 4 (skema bersama) |
 | Uji | Vitest 4, MSW 2 |
@@ -54,7 +55,8 @@ helpdesk/
 
 ## Status
 
-Tahap perancangan selesai. Implementasi belum dimulai.
+Tahap perancangan selesai. Implementasi Tahap 0 sedang berjalan — lihat
+[docs/backlog.md](docs/backlog.md) untuk progres tiap issue.
 
 ⚠️ Enam ketergantungan ke tim IT masih terbuka dan memblokir sebagian keputusan —
 lihat spesifikasi §13.
