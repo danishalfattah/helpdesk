@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment — jangan pernah di-commit
+.env
+.env.*
+!.env.example
+
+# Prisma
+prisma/*.db
+prisma/migrations/dev.db*
+
+# Lampiran — disimpan di filesystem, di luar repo (lihat spec §8.2)
+storage/
+uploads/
+
+# Log & cache
+*.log
+npm-debug.log*
+.turbo/
+.cache/
+coverage/
+
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
