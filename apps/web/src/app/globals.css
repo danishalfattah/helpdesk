@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   TOKEN DESIGN SYSTEM — Socfindo Helpdesk
+   ----------------------------------------------------------------------------
+   Berkas ini adalah SATU-SATUNYA sumber kebenaran warna. Jangan menulis warna
+   langsung di komponen (`bg-[#116936]`) — pakai token (`bg-primary`).
+
+   Dua format sengaja dicampur, dan itu ada alasannya:
+
+   - Token inti shadcn pakai `oklch`, mengikuti format bawaan shadcn supaya
+     `shadcn add` di masa depan tidak bentrok dengan berkas ini.
+   - Warna status & severity pakai `hex` karena nilainya DISALIN PERSIS dari
+     konfigurasi osTicket. Menjaganya tetap hex membuat asal-usulnya bisa
+     ditelusuri — kalau diubah ke oklch, jejaknya hilang.
+   ========================================================================= */
+
+:root {
+  /* --- Identitas Socfindo (dari logo resmi) -------------------------------
+     Hijau  #116936 — kontras 6,8:1 dengan teks putih → lolos WCAG AA
+     Kuning #fecf08 — kontras 14,3:1 dengan teks HITAM,
+                      hanya 1,5:1 dengan putih. WAJIB teks hitam.
+     osTicket lama memakai #0072bc (biru bawaan osTicket) yang sama sekali
+     bukan warna perusahaan. Sistem ini memakai identitas yang sebenarnya. */
+
+  --radius: 0.5rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  /* Hijau Socfindo #116936 */
+  --primary: oklch(0.459 0.113 152);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: oklch(0.968 0.007 152);
+  --secondary-foreground: oklch(0.31 0.08 152);
+
+  --muted: oklch(0.968 0 0);
+  --muted-foreground: oklch(0.52 0 0);
+
+  /* Aksen sengaja hijau samar, bukan kuning — token ini dipakai shadcn untuk
+     keadaan hover, dan kuning terlalu mencolok untuk itu. */
+  --accent: oklch(0.958 0.015 152);
+  --accent-foreground: oklch(0.31 0.08 152);
+
+  --destructive: oklch(0.577 0.245 27.3);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Kuning Socfindo #fecf08 — untuk peringatan. Teks HITAM, bukan putih. */
+  --warning: oklch(0.87 0.177 92);
+  --warning-foreground: oklch(0.145 0 0);
+
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.459 0.113 152);
+
+  /* --- Warna status tiket ------------------------------------------------
+     Disalin PERSIS dari konfigurasi queue osTicket. Agent sudah mengenali
+     warna-warna ini; mengubahnya berarti memaksa 36 orang belajar ulang
+     sesuatu yang sudah otomatis bagi mereka.
+     Teks memakai --foreground (hitam) — semua latar ini terang. */
+  --status-new: #bbdefb;
+  --status-open: #ffecb3;
+  --status-current: #d1c4e9;
+  --status-progress: #ffe0b2;
+  --status-pending: #fff9c4;
+  --status-reopened: #ffab91;
+  --status-resolved: #c8e6c9;
+  --status-closed: #ffcdd2;
+  --status-dead: #eeeeee;
+  --status-dormant: #cfd8dc;
+  --status-archived: #e0e0e0;
+  --status-foreground: #1a1a1a;
+
+  /* --- Severity (Urgency & Risk) -----------------------------------------
+     Dibawa dari Format::severityBadge() di osTicket. Pasangan latar/teks
+     ini sudah diperiksa kontrasnya di sana. */
+  --severity-low-bg: #c8e6c9;
+  --severity-low-fg: #1b5e20;
+  --severity-medium-bg: #fff9c4;
+  --severity-medium-fg: #7a6001;
+  --severity-high-bg: #ffe0b2;
+  --severity-high-fg: #8a4b00;
+  --severity-critical-bg: #ffcdd2;
+  --severity-critical-fg: #b71c1c;
+
+  /* Overdue — merah, mengikuti OverdueTextDecoration di osTicket */
+  --overdue: #e00000;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  /* Hijau dicerahkan untuk mode gelap — #116936 asli terlalu gelap di atas
+     latar gelap dan kontrasnya jatuh di bawah ambang AA. */
+  --primary: oklch(0.68 0.135 152);
+  --primary-foreground: oklch(0.145 0 0);
+
+  --secondary: oklch(0.269 0.02 152);
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+
+  --accent: oklch(0.269 0.025 152);
+  --accent-foreground: oklch(0.985 0 0);
+
+  --destructive: oklch(0.704 0.191 22.2);
+  --destructive-foreground: oklch(0.145 0 0);
+
+  --warning: oklch(0.79 0.16 92);
+  --warning-foreground: oklch(0.145 0 0);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.68 0.135 152);
+
+  /* Status di mode gelap: latar digelapkan, teks dibalik jadi terang.
+     Nilai terang bawaan osTicket tidak bisa dipakai apa adanya di sini —
+     teks hitam di atasnya justru menyilaukan. */
+  --status-new: #1e3a5f;
+  --status-open: #4a3c00;
+  --status-current: #3a2f52;
+  --status-progress: #4d3319;
+  --status-pending: #4a4520;
+  --status-reopened: #5c2f1f;
+  --status-resolved: #1b3d20;
+  --status-closed: #5c1f26;
+  --status-dead: #2e2e2e;
+  --status-dormant: #2b3438;
+  --status-archived: #333333;
+  --status-foreground: #f0f0f0;
+
+  --severity-low-bg: #1b3d20;
+  --severity-low-fg: #a5d6a7;
+  --severity-medium-bg: #4a4520;
+  --severity-medium-fg: #fff59d;
+  --severity-high-bg: #4d3319;
+  --severity-high-fg: #ffcc80;
+  --severity-critical-bg: #5c1f26;
+  --severity-critical-fg: #ef9a9a;
+
+  --overdue: #ff6b6b;
+}
+
+/* Menjembatani variabel di atas ke utility Tailwind: `bg-primary`,
+   `text-status-resolved`, dan seterusnya. */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-status-new: var(--status-new);
+  --color-status-open: var(--status-open);
+  --color-status-current: var(--status-current);
+  --color-status-progress: var(--status-progress);
+  --color-status-pending: var(--status-pending);
+  --color-status-reopened: var(--status-reopened);
+  --color-status-resolved: var(--status-resolved);
+  --color-status-closed: var(--status-closed);
+  --color-status-dead: var(--status-dead);
+  --color-status-dormant: var(--status-dormant);
+  --color-status-archived: var(--status-archived);
+  --color-status-foreground: var(--status-foreground);
+
+  --color-severity-low-bg: var(--severity-low-bg);
+  --color-severity-low-fg: var(--severity-low-fg);
+  --color-severity-medium-bg: var(--severity-medium-bg);
+  --color-severity-medium-fg: var(--severity-medium-fg);
+  --color-severity-high-bg: var(--severity-high-bg);
+  --color-severity-high-fg: var(--severity-high-fg);
+  --color-severity-critical-bg: var(--severity-critical-bg);
+  --color-severity-critical-fg: var(--severity-critical-fg);
+
+  --color-overdue: var(--overdue);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -1957,11 +1957,20 @@ export default {
 };
 ```
 
-- [ ] **Langkah 5: Buat `apps/web/src/app/globals.css`**
+- [ ] **Langkah 5: `apps/web/src/app/globals.css` — SUDAH ADA, jangan ditimpa**
 
-```css
-@import "tailwindcss";
+Berkas ini sudah berisi seluruh token design system: warna Socfindo (hijau
+`#116936`, kuning `#fecf08`), 11 warna status tiket yang disalin persis dari
+konfigurasi osTicket, warna severity, dan mode gelap.
+
+Cukup pastikan berkasnya ada:
+
+```bash
+ls apps/web/src/app/globals.css
 ```
+
+**Jangan menulis warna langsung di komponen** (`bg-[#116936]`). Pakai token:
+`bg-primary`, `bg-status-resolved`, `text-overdue`.
 
 - [ ] **Langkah 6: Buat `apps/web/src/lib/api.ts`**
 
@@ -2167,11 +2176,43 @@ export default function HalamanBeranda() {
 }
 ```
 
-- [ ] **Langkah 10: Pasang dependensi**
+- [ ] **Langkah 10: Pasang dependensi dan siapkan shadcn/ui**
 
 ```bash
 pnpm install
 ```
+
+Inisialisasi shadcn. Saat ditanya, **pilih "use existing" untuk CSS variables** —
+`globals.css` sudah berisi token Socfindo dan tidak boleh ditimpa nilai bawaan shadcn.
+
+```bash
+pnpm --filter @helpdesk/web exec shadcn@latest init
+pnpm --filter @helpdesk/web exec shadcn@latest add button input label card badge
+```
+
+⚠️ **Ini titik risiko yang harus dibuktikan, bukan diasumsikan.** shadcn dengan
+Tailwind 4 + React 19 + Next 16 — ketiganya masih baru. Kalau `init` gagal atau
+menimpa `globals.css`:
+
+1. Kembalikan `globals.css` dengan `git checkout apps/web/src/app/globals.css`
+2. Catat errornya di issue
+3. Sementara pakai komponen HTML biasa dengan token yang sama — Task 10 tetap bisa
+   selesai tanpa shadcn, karena tokennya yang penting, bukan komponennya
+
+- [ ] **Langkah 10b: Pastikan token benar-benar terbaca Tailwind**
+
+Tambahkan sementara di halaman mana pun, jalankan, lalu lihat di browser:
+
+```tsx
+<div className="bg-primary text-primary-foreground p-4">Hijau Socfindo</div>
+<div className="bg-status-resolved text-status-foreground p-4">Terselesaikan</div>
+```
+
+Harapan: kotak pertama hijau tua dengan teks putih, kotak kedua hijau muda dengan
+teks gelap. Kalau warnanya tidak muncul, blok `@theme inline` di `globals.css` belum
+terbaca — periksa `postcss.config.mjs`.
+
+Hapus kode sementara ini setelah terbukti.
 
 - [ ] **Langkah 11: Jalankan API dan web bersamaan**
 
@@ -2208,6 +2249,156 @@ sisi, sesi cookie bekerja, guard bekerja, dan Prisma benar-benar menulis ke SQL 
 ```bash
 git add apps/web
 git commit -m "feat(web): halaman login dan beranda sebagai walking skeleton"
+```
+
+---
+
+## Task 11: Halaman /design-system
+
+Halaman hidup yang merender komponen sungguhan dengan token sungguhan. Tidak pernah
+basi, karena memakai kode yang sama dengan halaman lain — beda dari berkas desain yang
+melenceng dalam hitungan hari.
+
+Untuk laporan kelompok 2, halaman ini tinggal di-screenshot sebagai bukti perancangan
+antarmuka. Milik **kelompok 2**.
+
+**Berkas:**
+- Buat: `apps/web/src/app/design-system/page.tsx`
+
+- [ ] **Langkah 1: Buat `apps/web/src/app/design-system/page.tsx`**
+
+```tsx
+const STATUS = [
+  ['Baru', 'bg-status-new'],
+  ['Terbuka', 'bg-status-open'],
+  ['Berjalan', 'bg-status-current'],
+  ['Sedang Dikerjakan', 'bg-status-progress'],
+  ['Tertunda', 'bg-status-pending'],
+  ['Dibuka Kembali', 'bg-status-reopened'],
+  ['Terselesaikan', 'bg-status-resolved'],
+  ['Ditutup', 'bg-status-closed'],
+  ['Mati', 'bg-status-dead'],
+  ['Tidak Aktif', 'bg-status-dormant'],
+  ['Diarsipkan', 'bg-status-archived'],
+] as const;
+
+const SEVERITY = [
+  ['Low', 'bg-severity-low-bg text-severity-low-fg'],
+  ['Medium', 'bg-severity-medium-bg text-severity-medium-fg'],
+  ['High', 'bg-severity-high-bg text-severity-high-fg'],
+  ['Very High', 'bg-severity-critical-bg text-severity-critical-fg'],
+] as const;
+
+function Bagian({ judul, anak }: { judul: string; anak: React.ReactNode }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-lg font-semibold">{judul}</h2>
+      {anak}
+    </section>
+  );
+}
+
+export default function HalamanDesignSystem() {
+  return (
+    <main className="mx-auto max-w-4xl space-y-10 p-8">
+      <header>
+        <h1 className="text-2xl font-bold">Design System</h1>
+        <p className="text-muted-foreground">
+          Halaman ini merender komponen sungguhan dengan token sungguhan dari{' '}
+          <code>globals.css</code>. Kalau ada yang terlihat salah di sini, salahnya
+          ada di token — bukan di halaman ini.
+        </p>
+      </header>
+
+      <Bagian
+        judul="Warna inti"
+        anak={
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="rounded-lg bg-primary p-4 text-primary-foreground">Primary</div>
+            <div className="rounded-lg bg-secondary p-4 text-secondary-foreground">Secondary</div>
+            <div className="rounded-lg bg-muted p-4 text-muted-foreground">Muted</div>
+            <div className="rounded-lg bg-accent p-4 text-accent-foreground">Accent</div>
+            <div className="rounded-lg bg-destructive p-4 text-destructive-foreground">Destructive</div>
+            <div className="rounded-lg bg-warning p-4 text-warning-foreground">Warning</div>
+            <div className="rounded-lg border bg-card p-4 text-card-foreground">Card</div>
+            <div className="rounded-lg border p-4 text-overdue font-bold">Overdue</div>
+          </div>
+        }
+      />
+
+      <Bagian
+        judul="Status tiket"
+        anak={
+          <>
+            <p className="text-sm text-muted-foreground">
+              Disalin persis dari konfigurasi osTicket — agent sudah mengenali
+              warna-warna ini.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {STATUS.map(([label, kelas]) => (
+                <span
+                  key={label}
+                  className={`${kelas} rounded-full px-3 py-1 text-sm font-medium text-status-foreground`}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </>
+        }
+      />
+
+      <Bagian
+        judul="Severity (Urgency & Risk)"
+        anak={
+          <div className="flex flex-wrap gap-2">
+            {SEVERITY.map(([label, kelas]) => (
+              <span key={label} className={`${kelas} rounded-full px-3 py-1 text-sm font-semibold`}>
+                {label}
+              </span>
+            ))}
+          </div>
+        }
+      />
+
+      <Bagian
+        judul="Tipografi"
+        anak={
+          <div className="space-y-1">
+            <p className="text-2xl font-bold">Judul halaman — 2xl bold</p>
+            <p className="text-lg font-semibold">Judul bagian — lg semibold</p>
+            <p className="text-base">Teks isi — base</p>
+            <p className="text-sm text-muted-foreground">Keterangan — sm muted</p>
+          </div>
+        }
+      />
+    </main>
+  );
+}
+```
+
+- [ ] **Langkah 2: Buka dan periksa di browser**
+
+Buka `http://localhost:3000/design-system` dan periksa:
+
+| Uji | Harapan |
+|---|---|
+| Kotak Primary | Hijau tua Socfindo, teks putih terbaca jelas |
+| Kotak Warning | Kuning Socfindo, teks **hitam** — bukan putih |
+| 11 lencana status | Semua terbaca, tidak ada teks yang menghilang di latarnya |
+| 4 lencana severity | Warna latar dan teks berpasangan benar |
+
+- [ ] **Langkah 3: Periksa mode gelap**
+
+Tambahkan kelas `dark` ke `<html>` lewat DevTools, lalu periksa ulang tabel di atas.
+Semua teks harus tetap terbaca — kalau ada yang menghilang, perbaiki tokennya di
+`globals.css`, bukan di halaman ini.
+
+- [ ] **Langkah 4: Commit**
+
+```bash
+git add apps/web/src/app/design-system
+git commit -m "feat(web): halaman design-system sebagai panduan gaya hidup"
 ```
 
 ---

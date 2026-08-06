@@ -188,3 +188,22 @@ ke API sungguhan setelah #7 dan #8 jadi.
 | Refresh `/beranda` tetap tampil | Cookie sesi bertahan |
 
 Kalau tabel ini lulus semua, **Tahap 0 selesai.**
+
+---
+
+## #11 — Halaman /design-system
+
+**Label:** `kelompok-2` `tahap-0` · **Rujukan:** Task 11 · **Bergantung:** #10 (setelah shadcn siap)
+
+Panduan gaya hidup yang merender komponen sungguhan dengan token sungguhan.
+
+- 8 warna inti, 11 lencana status, 4 lencana severity, skala tipografi
+- Diperiksa di mode terang **dan** gelap
+
+Token warnanya sudah ada di `apps/web/src/app/globals.css` — hijau `#116936` dan
+kuning `#fecf08` dari logo Socfindo, plus 11 warna status yang disalin persis dari
+konfigurasi osTicket.
+
+Halaman ini tinggal di-screenshot untuk bab perancangan antarmuka di laporan
+kelompok 2. Bedanya dengan berkas desain: halaman ini tidak bisa basi, karena
+memakai kode yang sama dengan halaman lain.
