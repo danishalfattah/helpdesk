@@ -1,0 +1,63 @@
+model Agent {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique @db.NVarChar(255)
+  name         String   @db.NVarChar(128)
+  passwordHash String   @db.NVarChar(255)
+  isActive     Boolean  @default(true)
+  failedLogins Int      @default(0)
+  lockedUntil  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  roles    AgentRole[]
+  sessions Session[]
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.NVarChar(64)
+  description String? @db.NVarChar(255)
+
+  agents      AgentRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id    Int    @id @default(autoincrement())
+  key   String @unique @db.NVarChar(64)
+  label String @db.NVarChar(128)
+
+  roles RolePermission[]
+}
+
+model AgentRole {
+  agentId Int
+  roleId  Int
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: NoAction)
+  role  Role  @relation(fields: [roleId], references: [id], onDelete: NoAction)
+
+  @@id([agentId, roleId])
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: NoAction)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: NoAction)
+
+  @@id([roleId, permissionId])
+}
+
+model Session {
+  id        String   @id @db.NVarChar(64)
+  agentId   Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: NoAction)
+
+  @@index([agentId])
+  @@index([expiresAt])
+}
