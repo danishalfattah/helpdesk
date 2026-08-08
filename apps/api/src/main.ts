@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module.js';
+import { GlobalExceptionFilter } from './common/global-exception.filter.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,7 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // credentials: true wajib supaya cookie sesi httpOnly ikut terkirim
   // dari browser ke API yang beda port.
