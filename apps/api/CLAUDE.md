@@ -121,6 +121,32 @@ menipu diri sendiri.
 Service diuji dengan Prisma palsu (`vi.fn()`), bukan database sungguhan. Test harus
 cepat dan tidak bergantung pada keadaan database.
 
+## Catatan dev server: `packages/contract` harus di-build dulu
+
+`pnpm dev` dan `pnpm build` diawali `pnpm --filter @helpdesk/contract build`
+otomatis — jangan dihapus prefix-nya.
+
+**Kenapa:** `packages/contract` dulu sempat mengekspor source `.ts` langsung tanpa
+build (lihat `packages/contract/CLAUDE.md`). Itu jalan mulus di Vitest dan Next.js
+karena keduanya punya bundler sendiri yang mentransformasi apa pun yang mereka
+temui. Tapi `nest start --watch` (dan runner Node polos lainnya) **tidak** ikut
+mentransformasi file dari paket workspace lain yang diakses lewat `node_modules` —
+begitu runtime sampai ke `packages/contract`, Node coba cari file `error.js` yang
+secara harfiah tidak ada (isinya `error.ts`), lalu crash `ERR_MODULE_NOT_FOUND`.
+
+Sudah dicoba dua solusi berbasis loader (`tsx watch`, lalu builder `-b swc`) —
+dua-duanya gagal: `tsx` pakai esbuild yang tidak dukung `emitDecoratorMetadata`
+(DI NestJS jadi rusak), dan builder `-b swc` cuma mengompilasi `apps/api` sendiri,
+tidak menyentuh paket lain sama sekali.
+
+**Solusinya:** `packages/contract` sekarang benar-benar di-*build* jadi CommonJS
+biasa (`dist/*.js` + `.d.ts`), bukan lagi source `.ts` mentah. Node bisa
+me-`require()`-nya langsung tanpa loader ajaib apa pun. `pretest`/`pretypecheck`
+di `package.json` ini juga otomatis membangun ulang `packages/contract` sebelum
+jalan — jadi kalau ada yang mengubah skema di `packages/contract/src`, cukup
+jalankan `pnpm --filter @helpdesk/api dev`/`test` seperti biasa, tidak perlu build
+manual dulu.
+
 ## Catatan Vitest
 
 Vitest di sini memakai `unplugin-swc`, bukan esbuild bawaan. Alasannya esbuild tidak

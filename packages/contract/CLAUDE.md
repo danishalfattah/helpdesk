@@ -75,6 +75,24 @@ pnpm --filter @helpdesk/contract test
 Test di sini murah dan cepat — tidak ada database, tidak ada jaringan. Tidak ada
 alasan melewatkannya.
 
+## Paket ini di-build, bukan dipakai sebagai source `.ts` mentah
+
+`main`/`exports` di `package.json` menunjuk ke `dist/`, bukan `src/`. Jalankan
+`pnpm --filter @helpdesk/contract build` (`tsc`) untuk menghasilkannya —
+`apps/api` sudah otomatis melakukan ini lewat `pretest`/`pretypecheck`/`dev` di
+`package.json`-nya sendiri, jadi biasanya tidak perlu build manual.
+
+**Kenapa bukan source langsung:** sempat dicoba, dan Vitest + Next.js baik-baik
+saja (keduanya punya bundler sendiri yang mentransformasi apa pun yang mereka
+temui). Tapi `apps/api` menjalankan Node polos lewat `nest start --watch` — tidak
+ada bundler, dan tidak ada cara aman untuk membuat Node mentransformasi `.ts` dari
+paket workspace lain tanpa merusak dependency injection NestJS (`emitDecoratorMetadata`
+butuh transform berbasis `tsc`/SWC yang tepat, bukan esbuild). Build ke `dist/`
+menghilangkan masalah ini sepenuhnya — Node tinggal `require()` JS biasa.
+
+`dist/` tidak ikut git (`.gitignore`). Kalau `packages/contract/src` diubah, cukup
+jalankan ulang perintah `dev`/`test` di `apps/api` — dibangun ulang otomatis.
+
 ## Yang TIDAK boleh masuk sini
 
 - Logika bisnis — ini cuma bentuk data
