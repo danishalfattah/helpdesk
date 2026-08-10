@@ -5,7 +5,7 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { ErrorCode, type ApiErrorResponse } from '@helpdesk/contract';
 import { DomainError } from './domain.error.js';
 
@@ -47,7 +47,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    this.logger.error('Error tak tertangani', exception as Error);
+    const req = host.switchToHttp().getRequest<Request & { log?: Logger & { error: (obj: unknown, msg?: string) => void } }>();
+    if (req.log) {
+      req.log.error({ err: exception }, 'Error tak tertangani');
+    } else {
+      this.logger.error('Error tak tertangani', exception as Error);
+    }
+    
     const body: ApiErrorResponse = {
       error: {
         code: ErrorCode.INTERNAL_ERROR,
