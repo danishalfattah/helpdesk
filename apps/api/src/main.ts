@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module.js';
 import { GlobalExceptionFilter } from './common/global-exception.filter.js';
+import { pinoHttp } from 'pino-http';
+import { resolveRequestId } from './common/request-id.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +13,15 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
+  app.use(
+    pinoHttp({
+      genReqId: (req, res) => {
+        const id = resolveRequestId(req);
+        res.setHeader('x-request-id', id);
+        return id;
+      },
+    }),
+  );
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // credentials: true wajib supaya cookie sesi httpOnly ikut terkirim
