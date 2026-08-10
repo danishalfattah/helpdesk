@@ -36,3 +36,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   return body as T;
 }
+
+export function logout(): Promise<{ ok: true }> {
+  return apiFetch<{ ok: true }>('/auth/logout', { method: 'POST' });
+}

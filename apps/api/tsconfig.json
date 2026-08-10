@@ -3,7 +3,10 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "module": "CommonJS",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./"
   },
-  "include": ["src/**/*", "prisma/**/*", "prisma.config.ts"]
+  "include": ["src/**/*"]
 }
