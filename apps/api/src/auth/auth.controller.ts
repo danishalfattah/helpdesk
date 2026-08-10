@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Req, Res, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import { LoginRequest, type LoginResponse } from '@helpdesk/contract';
+import { LoginRequest, type LoginResponse, type AgentProfile } from '@helpdesk/contract';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { AuthService } from './auth.service.js';
 import { SessionService, SESSION_COOKIE, SESSION_TTL_MENIT } from './session.service.js';
+import { PermissionGuard } from './permission.guard.js';
 
 @Controller('auth')
 export class AuthController {
@@ -42,5 +43,11 @@ export class AuthController {
     if (id) await this.session.destroy(id);
     res.clearCookie(SESSION_COOKIE, { path: '/' });
     return { ok: true };
+  }
+
+  @Get('me')
+  @UseGuards(PermissionGuard)
+  me(@Req() req: Request): { agent: AgentProfile } {
+    return { agent: (req as Request & { agent: AgentProfile }).agent };
   }
 }
