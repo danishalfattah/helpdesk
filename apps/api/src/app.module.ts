@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { DepartmentModule } from './department/department.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 import { RoleModule } from './role/role.module.js';
 
 @Module({
@@ -12,6 +13,7 @@ import { RoleModule } from './role/role.module.js';
     }),
     PrismaModule,
     AuthModule,
+    DepartmentModule,
     RoleModule,
   ],
 })

@@ -1,0 +1,14 @@
+model Department {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.NVarChar(128)
+  isActive  Boolean  @default(true)
+  parentId  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Self-relation 2 tingkat. Kedalaman (parent tidak boleh punya parent lagi)
+  // ditegakkan di DepartmentService, bukan di schema — Prisma tidak bisa
+  // menyatakan batas kedalaman secara deklaratif.
+  parent   Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children Department[] @relation("DepartmentHierarchy")
+}
