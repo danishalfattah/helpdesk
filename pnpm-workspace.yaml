@@ -1,3 +1,12 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+# Paket yang boleh menjalankan build script (kompilasi native) saat install.
+# Kelimanya sengaja kita pilih dan versinya sudah diverifikasi (spec §3) --
+# bukan dependency asing, jadi aman diizinkan.
+allowBuilds:
+  '@prisma/engines': true
+  '@swc/core': true
+  argon2: true
+  esbuild: true
+  prisma: true
