@@ -17,6 +17,26 @@ src/ticket/
 **Ikuti bentuk ini walaupun terasa berlebihan untuk modul kecil.** Keseragaman itu
 yang membuat kode hasil generate AI tetap konsisten sepanjang sebulan.
 
+## Path REST
+
+Bentuk umum sudah dikunci di spec §7 (`/api/v1`, paginasi `limit`+`offset`, error
+seragam). Yang belum ada di sana adalah aturan penamaan path — ditulis di sini
+karena inilah tempat yang dibaca tiap kali modul baru dibuat.
+
+| Aturan | Contoh |
+|---|---|
+| Resource **jamak**, `kebab-case` | `/departments`, `/help-topics` — bukan `/department` atau `/departmentList` |
+| ID sebagai path param, bukan query | `/departments/:id` — bukan `/departments?id=1` |
+| Anak resource nested di bawah induk | `/tickets/:id/thread-entries` — bukan `/thread-entries?ticketId=1` |
+| Aksi yang bukan CRUD murni pakai kata kerja | `POST /tickets/:id/assign`, `POST /tickets/:id/reopen` |
+| Nama controller & path selalu sepasang | `TicketController` → `/tickets`, jangan pernah beda |
+
+**Kenapa ini tidak perlu daftar path lengkap dari awal:** konsumennya cuma
+`apps/web`, dibangun tim yang sama, di repo yang sama. Kalau ada path berubah,
+TypeScript langsung menolak compile di sisi web lewat `@helpdesk/contract` — ketahuan
+seketika, bukan menunggu laporan pengguna luar. Yang wajib konsisten bukan daftar
+pathnya, tapi **pola penamaannya** — itu yang dijaga tabel di atas.
+
 ## Pembagian tanggung jawab yang tidak boleh kabur
 
 | Lapisan | Menjawab | Tidak boleh |
