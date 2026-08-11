@@ -47,3 +47,8 @@ export type RolePermission = Prisma.RolePermissionModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Department
+ * 
+ */
+export type Department = Prisma.DepartmentModel

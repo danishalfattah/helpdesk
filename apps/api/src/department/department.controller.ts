@@ -51,10 +51,9 @@ export class DepartmentController {
 
   @Patch(':id')
   @RequirePermission('department.manage')
-  @UsePipes(new ZodValidationPipe(UpdateDepartmentRequest))
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateDepartmentRequest,
+    @Body(new ZodValidationPipe(UpdateDepartmentRequest)) body: UpdateDepartmentRequest,
   ): Promise<UpdateDepartmentResponse> {
     return { department: await this.departments.update(id, body) };
   }
