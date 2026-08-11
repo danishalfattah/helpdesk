@@ -56,7 +56,10 @@ export const ModelName = {
   Permission: 'Permission',
   AgentRole: 'AgentRole',
   RolePermission: 'RolePermission',
-  Session: 'Session'
+  Session: 'Session',
+  Category: 'Category',
+  CategoryDepartment: 'CategoryDepartment',
+  Department: 'Department'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -133,6 +136,38 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive',
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const CategoryDepartmentScalarFieldEnum = {
+  categoryId: 'categoryId',
+  departmentId: 'departmentId'
+} as const
+
+export type CategoryDepartmentScalarFieldEnum = (typeof CategoryDepartmentScalarFieldEnum)[keyof typeof CategoryDepartmentScalarFieldEnum]
+
+
+export const DepartmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive',
+  parentId: 'parentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
 
 
 export const SortOrder = {
