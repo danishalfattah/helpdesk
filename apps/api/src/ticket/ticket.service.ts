@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ErrorCode, type CreateTicketRequest, type TicketDto } from '@helpdesk/contract';
+import { ErrorCode, type CreateTicketRequest, type TicketDto, type UpdateTicketRequest } from '@helpdesk/contract';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { DomainError } from '../common/domain.error.js';
 
@@ -9,6 +9,7 @@ import { DomainError } from '../common/domain.error.js';
 const NOMOR_TIKET_AWAL = 1000015;
 
 const STATUS_AWAL = 'New';
+const STATUS_REOPEN = 'Re-Opened';
 const PRIORITY_DEFAULT = 'Medium';
 
 @Injectable()
@@ -59,6 +60,86 @@ export class TicketService {
         },
       },
     });
+  }
+
+  // Aturan warisan osTicket (spec §8.3, class.ticket.php): tiket closed tidak
+  // bisa diubah/dibalas sama sekali — harus reopen() dulu lewat aksi terpisah
+  // (POST /tickets/:id/reopen), bukan digabung ke PATCH biasa.
+  async update(id: number, input: UpdateTicketRequest): Promise<TicketDto> {
+    const tiket = await this.ambilTiketDenganStatus(id);
+    if (tiket.status.isClosed) {
+      throw new DomainError(ErrorCode.TICKET_CLOSED, 'Tiket sudah ditutup. Buka kembali sebelum membalas.', 409);
+    }
+
+    if (input.departmentId !== undefined) {
+      await this.pastikanDepartmentAda(input.departmentId);
+    }
+    if (input.priorityId !== undefined) {
+      await this.pastikanPriorityAda(input.priorityId);
+    }
+
+    const categoryIdEfektif = input.categoryId !== undefined ? input.categoryId : tiket.categoryId;
+    const departmentIdEfektif = input.departmentId ?? tiket.departmentId;
+    if (categoryIdEfektif != null && (input.categoryId !== undefined || input.departmentId !== undefined)) {
+      await this.pastikanKategoriBolehUntukDepartment(categoryIdEfektif, departmentIdEfektif);
+    }
+
+    let statusId: number | undefined;
+    let closedAt: Date | null | undefined;
+    if (input.statusId !== undefined) {
+      const status = await this.pastikanStatusAda(input.statusId);
+      statusId = status.id;
+      closedAt = status.isClosed ? new Date() : null;
+    }
+
+    return this.prisma.ticket.update({
+      where: { id },
+      data: {
+        ...(input.subject !== undefined ? { subject: input.subject } : {}),
+        ...(input.departmentId !== undefined ? { departmentId: input.departmentId } : {}),
+        ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
+        ...(input.priorityId !== undefined ? { priorityId: input.priorityId } : {}),
+        ...(statusId !== undefined ? { statusId, closedAt } : {}),
+        ...(input.callType !== undefined ? { callType: input.callType } : {}),
+        ...(input.closureType !== undefined ? { closureType: input.closureType } : {}),
+        ...(input.location !== undefined ? { location: input.location } : {}),
+        ...(input.urgency !== undefined ? { urgency: input.urgency } : {}),
+        ...(input.risk !== undefined ? { risk: input.risk } : {}),
+        ...(input.solution !== undefined ? { solution: input.solution } : {}),
+      },
+    });
+  }
+
+  // Satu-satunya jalan mengubah tiket closed — aksi tersendiri, bukan lewat
+  // PATCH (lihat konvensi path di apps/api/CLAUDE.md: POST /tickets/:id/reopen).
+  async reopen(id: number): Promise<TicketDto> {
+    const tiket = await this.ambilTiketDenganStatus(id);
+    if (!tiket.status.isClosed) {
+      throw new DomainError(ErrorCode.TICKET_NOT_CLOSED, 'Tiket ini belum ditutup.', 409);
+    }
+
+    const statusId = await this.statusReopenId();
+    return this.prisma.ticket.update({ where: { id }, data: { statusId, closedAt: null } });
+  }
+
+  private async ambilTiketDenganStatus(id: number) {
+    const tiket = await this.prisma.ticket.findUnique({ where: { id }, include: { status: true } });
+    if (!tiket) throw new DomainError(ErrorCode.TICKET_NOT_FOUND, 'Tiket tidak ditemukan.', 404);
+    return tiket;
+  }
+
+  private async pastikanStatusAda(id: number) {
+    const status = await this.prisma.ticketStatus.findUnique({ where: { id } });
+    if (!status) throw new DomainError(ErrorCode.TICKET_STATUS_NOT_FOUND, 'Status tiket tidak ditemukan.', 404);
+    return status;
+  }
+
+  private async statusReopenId(): Promise<number> {
+    const status = await this.prisma.ticketStatus.findUnique({ where: { name: STATUS_REOPEN } });
+    if (!status) {
+      throw new DomainError(ErrorCode.TICKET_STATUS_NOT_FOUND, `Status "${STATUS_REOPEN}" belum di-seed.`, 500);
+    }
+    return status.id;
   }
 
   private async cariAtauBuatRequester(email: string, name: string) {
