@@ -7,6 +7,7 @@ import { DepartmentModule } from './department/department.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { PriorityModule } from './priority/priority.module.js';
 import { RoleModule } from './role/role.module.js';
+import { TicketModule } from './ticket/ticket.module.js';
 import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
 
 @Module({
@@ -22,6 +23,7 @@ import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
     DepartmentModule,
     RoleModule,
     PriorityModule,
+    TicketModule,
     TicketStatusModule,
   ],
 })

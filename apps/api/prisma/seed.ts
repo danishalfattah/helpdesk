@@ -16,6 +16,7 @@ const prisma = new PrismaClient({ adapter });
 /** Izin awal. Bertambah seiring modul baru dibangun. */
 const PERMISSIONS = [
   { key: 'ticket.view', label: 'Lihat tiket' },
+  { key: 'ticket.create', label: 'Buat tiket' },
   { key: 'ticket.edit', label: 'Ubah tiket' },
   { key: 'department.manage', label: 'Kelola department' },
   { key: 'category.manage', label: 'Kelola kategori' },

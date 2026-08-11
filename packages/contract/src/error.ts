@@ -47,6 +47,8 @@ export const ErrorCode = {
   PRIORITY_IN_USE: 'PRIORITY_IN_USE',
   AGENT_NOT_FOUND: 'AGENT_NOT_FOUND',
   AGENT_EMAIL_TAKEN: 'AGENT_EMAIL_TAKEN',
+  TICKET_NOT_FOUND: 'TICKET_NOT_FOUND',
+  TICKET_CATEGORY_NOT_ALLOWED: 'TICKET_CATEGORY_NOT_ALLOWED',
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
