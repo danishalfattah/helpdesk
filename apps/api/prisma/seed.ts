@@ -20,11 +20,44 @@ const PERMISSIONS = [
   { key: 'department.manage', label: 'Kelola department' },
   { key: 'category.manage', label: 'Kelola kategori' },
   { key: 'agent.manage', label: 'Kelola agent' },
+  { key: 'role.manage', label: 'Kelola role dan permission' },
+  { key: 'ticket-status.manage', label: 'Kelola status tiket' },
+  { key: 'priority.manage', label: 'Kelola prioritas tiket' },
 ];
+
+/** 11 status warisan osTicket/Versa (glosarium.md). */
+const TICKET_STATUSES: { name: string; isClosed: boolean }[] = [
+  { name: 'Open', isClosed: false },
+  { name: 'New', isClosed: false },
+  { name: 'Work In Progress', isClosed: false },
+  { name: 'Pending', isClosed: false },
+  { name: 'Re-Opened', isClosed: false },
+  { name: 'Current', isClosed: false },
+  { name: 'Resolved', isClosed: true },
+  { name: 'Closed', isClosed: true },
+  { name: 'Dead', isClosed: true },
+  { name: 'Dormant', isClosed: true },
+  { name: 'Archived', isClosed: true },
+];
+
+/** Dikonfirmasi tim: 3 prioritas (bukan warisan osTicket, keputusan baru). */
+const PRIORITIES = ['High', 'Medium', 'Low'];
 
 async function main(): Promise<void> {
   for (const p of PERMISSIONS) {
     await prisma.permission.upsert({ where: { key: p.key }, update: {}, create: p });
+  }
+
+  for (const [i, s] of TICKET_STATUSES.entries()) {
+    await prisma.ticketStatus.upsert({
+      where: { name: s.name },
+      update: {},
+      create: { name: s.name, isClosed: s.isClosed, sortOrder: i },
+    });
+  }
+
+  for (const [i, name] of PRIORITIES.entries()) {
+    await prisma.priority.upsert({ where: { name }, update: {}, create: { name, sortOrder: i } });
   }
 
   const admin = await prisma.role.upsert({
