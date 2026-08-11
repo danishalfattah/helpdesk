@@ -1,0 +1,69 @@
+model Ticket {
+  id Int @id @default(autoincrement())
+
+  // Terpisah dari id — nomor yang dilihat pengguna, id murni internal (spec
+  // §5.3). Cara menghasilkannya (mulai dari berapa, urutan) jadi tanggung
+  // jawab service pembuatan tiket (issue #25), bukan schema ini.
+  number  Int    @unique
+  subject String @db.NVarChar(255)
+
+  requesterId  Int
+  departmentId Int
+  categoryId   Int?
+  statusId     Int
+  priorityId   Int
+  assigneeId   Int?
+
+  // Enam field warisan Versa, stabil 15 tahun → kolom tetap, bukan EAV (spec
+  // §5.1). Nama field sengaja TIDAK diterjemahkan (lihat glosarium.md).
+  callType    String? @db.NVarChar(64)
+  closureType String? @db.NVarChar(64)
+  location    String? @db.NVarChar(128)
+  urgency     String? @db.NVarChar(32)
+  risk        String? @db.NVarChar(32)
+  solution    String? @db.NVarChar(Max)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  closedAt  DateTime?
+
+  requester  Requester    @relation(fields: [requesterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  department Department   @relation(fields: [departmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category   Category?    @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status     TicketStatus @relation(fields: [statusId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  priority   Priority     @relation(fields: [priorityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  assignee   Agent?       @relation(fields: [assigneeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  threadEntries ThreadEntry[]
+  threadEvents  ThreadEvent[]
+
+  @@index([requesterId])
+  @@index([departmentId])
+  @@index([categoryId])
+  @@index([statusId])
+  @@index([assigneeId])
+}
+
+// Bare untuk sekarang — cukup supaya Ticket punya FK yang valid. Seed 12
+// status warisan osTicket + modul CRUD admin dikerjakan di issue #24.
+model TicketStatus {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.NVarChar(64)
+
+  // Dipakai formula overdue (spec §8.3): dueDate < closedAt kalau closed,
+  // dueDate < now() kalau open. Kolom sungguhan, bukan dihardcode dari nama —
+  // admin boleh ganti nama status (glosarium.md).
+  isClosed  Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  tickets Ticket[]
+}
+
+// Bare untuk sekarang, sama seperti TicketStatus — modul CRUD admin di issue #24.
+model Priority {
+  id        Int    @id @default(autoincrement())
+  name      String @unique @db.NVarChar(64)
+  sortOrder Int    @default(0)
+
+  tickets Ticket[]
+}

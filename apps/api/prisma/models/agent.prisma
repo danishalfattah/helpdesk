@@ -11,6 +11,10 @@ model Agent {
 
   roles    AgentRole[]
   sessions Session[]
+
+  assignedTickets Ticket[]
+  threadEntries   ThreadEntry[]
+  threadEvents    ThreadEvent[]
 }
 
 model Role {

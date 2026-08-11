@@ -59,7 +59,14 @@ export const ModelName = {
   Session: 'Session',
   Category: 'Category',
   CategoryDepartment: 'CategoryDepartment',
-  Department: 'Department'
+  Department: 'Department',
+  Requester: 'Requester',
+  ThreadEntry: 'ThreadEntry',
+  ThreadEvent: 'ThreadEvent',
+  Attachment: 'Attachment',
+  Ticket: 'Ticket',
+  TicketStatus: 'TicketStatus',
+  Priority: 'Priority'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -168,6 +175,99 @@ export const DepartmentScalarFieldEnum = {
 } as const
 
 export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+
+
+export const RequesterScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  createdAt: 'createdAt'
+} as const
+
+export type RequesterScalarFieldEnum = (typeof RequesterScalarFieldEnum)[keyof typeof RequesterScalarFieldEnum]
+
+
+export const ThreadEntryScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  authorAgentId: 'authorAgentId',
+  authorRequesterId: 'authorRequesterId',
+  isInternal: 'isInternal',
+  body: 'body',
+  createdAt: 'createdAt'
+} as const
+
+export type ThreadEntryScalarFieldEnum = (typeof ThreadEntryScalarFieldEnum)[keyof typeof ThreadEntryScalarFieldEnum]
+
+
+export const ThreadEventScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  agentId: 'agentId',
+  eventType: 'eventType',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  createdAt: 'createdAt'
+} as const
+
+export type ThreadEventScalarFieldEnum = (typeof ThreadEventScalarFieldEnum)[keyof typeof ThreadEventScalarFieldEnum]
+
+
+export const AttachmentScalarFieldEnum = {
+  id: 'id',
+  threadEntryId: 'threadEntryId',
+  originalName: 'originalName',
+  mimeType: 'mimeType',
+  size: 'size',
+  path: 'path',
+  checksum: 'checksum',
+  createdAt: 'createdAt'
+} as const
+
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const TicketScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  subject: 'subject',
+  requesterId: 'requesterId',
+  departmentId: 'departmentId',
+  categoryId: 'categoryId',
+  statusId: 'statusId',
+  priorityId: 'priorityId',
+  assigneeId: 'assigneeId',
+  callType: 'callType',
+  closureType: 'closureType',
+  location: 'location',
+  urgency: 'urgency',
+  risk: 'risk',
+  solution: 'solution',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  closedAt: 'closedAt'
+} as const
+
+export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
+
+
+export const TicketStatusScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isClosed: 'isClosed',
+  sortOrder: 'sortOrder'
+} as const
+
+export type TicketStatusScalarFieldEnum = (typeof TicketStatusScalarFieldEnum)[keyof typeof TicketStatusScalarFieldEnum]
+
+
+export const PriorityScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder'
+} as const
+
+export type PriorityScalarFieldEnum = (typeof PriorityScalarFieldEnum)[keyof typeof PriorityScalarFieldEnum]
 
 
 export const SortOrder = {

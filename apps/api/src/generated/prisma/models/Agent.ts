@@ -254,6 +254,9 @@ export type AgentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Agent"> | Date | string
   roles?: Prisma.AgentRoleListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  assignedTickets?: Prisma.TicketListRelationFilter
+  threadEntries?: Prisma.ThreadEntryListRelationFilter
+  threadEvents?: Prisma.ThreadEventListRelationFilter
 }
 
 export type AgentOrderByWithRelationInput = {
@@ -268,6 +271,9 @@ export type AgentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   roles?: Prisma.AgentRoleOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
+  assignedTickets?: Prisma.TicketOrderByRelationAggregateInput
+  threadEntries?: Prisma.ThreadEntryOrderByRelationAggregateInput
+  threadEvents?: Prisma.ThreadEventOrderByRelationAggregateInput
 }
 
 export type AgentWhereUniqueInput = Prisma.AtLeast<{
@@ -285,6 +291,9 @@ export type AgentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Agent"> | Date | string
   roles?: Prisma.AgentRoleListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
+  assignedTickets?: Prisma.TicketListRelationFilter
+  threadEntries?: Prisma.ThreadEntryListRelationFilter
+  threadEvents?: Prisma.ThreadEventListRelationFilter
 }, "id" | "email">
 
 export type AgentOrderByWithAggregationInput = {
@@ -330,6 +339,9 @@ export type AgentCreateInput = {
   updatedAt?: Date | string
   roles?: Prisma.AgentRoleCreateNestedManyWithoutAgentInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventCreateNestedManyWithoutAgentInput
 }
 
 export type AgentUncheckedCreateInput = {
@@ -344,6 +356,9 @@ export type AgentUncheckedCreateInput = {
   updatedAt?: Date | string
   roles?: Prisma.AgentRoleUncheckedCreateNestedManyWithoutAgentInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryUncheckedCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventUncheckedCreateNestedManyWithoutAgentInput
 }
 
 export type AgentUpdateInput = {
@@ -357,6 +372,9 @@ export type AgentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.AgentRoleUpdateManyWithoutAgentNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUpdateManyWithoutAgentNestedInput
 }
 
 export type AgentUncheckedUpdateInput = {
@@ -371,6 +389,9 @@ export type AgentUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.AgentRoleUncheckedUpdateManyWithoutAgentNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUncheckedUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUncheckedUpdateManyWithoutAgentNestedInput
 }
 
 export type AgentCreateManyInput = {
@@ -458,6 +479,11 @@ export type AgentScalarRelationFilter = {
   isNot?: Prisma.AgentWhereInput
 }
 
+export type AgentNullableScalarRelationFilter = {
+  is?: Prisma.AgentWhereInput | null
+  isNot?: Prisma.AgentWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -510,6 +536,54 @@ export type AgentUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUpdateToOneWithWhereWithoutSessionsInput, Prisma.AgentUpdateWithoutSessionsInput>, Prisma.AgentUncheckedUpdateWithoutSessionsInput>
 }
 
+export type AgentCreateNestedOneWithoutThreadEntriesInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutThreadEntriesInput, Prisma.AgentUncheckedCreateWithoutThreadEntriesInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutThreadEntriesInput
+  connect?: Prisma.AgentWhereUniqueInput
+}
+
+export type AgentUpdateOneWithoutThreadEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutThreadEntriesInput, Prisma.AgentUncheckedCreateWithoutThreadEntriesInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutThreadEntriesInput
+  upsert?: Prisma.AgentUpsertWithoutThreadEntriesInput
+  disconnect?: Prisma.AgentWhereInput | boolean
+  delete?: Prisma.AgentWhereInput | boolean
+  connect?: Prisma.AgentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUpdateToOneWithWhereWithoutThreadEntriesInput, Prisma.AgentUpdateWithoutThreadEntriesInput>, Prisma.AgentUncheckedUpdateWithoutThreadEntriesInput>
+}
+
+export type AgentCreateNestedOneWithoutThreadEventsInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutThreadEventsInput, Prisma.AgentUncheckedCreateWithoutThreadEventsInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutThreadEventsInput
+  connect?: Prisma.AgentWhereUniqueInput
+}
+
+export type AgentUpdateOneWithoutThreadEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutThreadEventsInput, Prisma.AgentUncheckedCreateWithoutThreadEventsInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutThreadEventsInput
+  upsert?: Prisma.AgentUpsertWithoutThreadEventsInput
+  disconnect?: Prisma.AgentWhereInput | boolean
+  delete?: Prisma.AgentWhereInput | boolean
+  connect?: Prisma.AgentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUpdateToOneWithWhereWithoutThreadEventsInput, Prisma.AgentUpdateWithoutThreadEventsInput>, Prisma.AgentUncheckedUpdateWithoutThreadEventsInput>
+}
+
+export type AgentCreateNestedOneWithoutAssignedTicketsInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutAssignedTicketsInput, Prisma.AgentUncheckedCreateWithoutAssignedTicketsInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutAssignedTicketsInput
+  connect?: Prisma.AgentWhereUniqueInput
+}
+
+export type AgentUpdateOneWithoutAssignedTicketsNestedInput = {
+  create?: Prisma.XOR<Prisma.AgentCreateWithoutAssignedTicketsInput, Prisma.AgentUncheckedCreateWithoutAssignedTicketsInput>
+  connectOrCreate?: Prisma.AgentCreateOrConnectWithoutAssignedTicketsInput
+  upsert?: Prisma.AgentUpsertWithoutAssignedTicketsInput
+  disconnect?: Prisma.AgentWhereInput | boolean
+  delete?: Prisma.AgentWhereInput | boolean
+  connect?: Prisma.AgentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUpdateToOneWithWhereWithoutAssignedTicketsInput, Prisma.AgentUpdateWithoutAssignedTicketsInput>, Prisma.AgentUncheckedUpdateWithoutAssignedTicketsInput>
+}
+
 export type AgentCreateWithoutRolesInput = {
   email: string
   name: string
@@ -520,6 +594,9 @@ export type AgentCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventCreateNestedManyWithoutAgentInput
 }
 
 export type AgentUncheckedCreateWithoutRolesInput = {
@@ -533,6 +610,9 @@ export type AgentUncheckedCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryUncheckedCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventUncheckedCreateNestedManyWithoutAgentInput
 }
 
 export type AgentCreateOrConnectWithoutRolesInput = {
@@ -561,6 +641,9 @@ export type AgentUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUpdateManyWithoutAgentNestedInput
 }
 
 export type AgentUncheckedUpdateWithoutRolesInput = {
@@ -574,6 +657,9 @@ export type AgentUncheckedUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUncheckedUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUncheckedUpdateManyWithoutAgentNestedInput
 }
 
 export type AgentCreateWithoutSessionsInput = {
@@ -586,6 +672,9 @@ export type AgentCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.AgentRoleCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventCreateNestedManyWithoutAgentInput
 }
 
 export type AgentUncheckedCreateWithoutSessionsInput = {
@@ -599,6 +688,9 @@ export type AgentUncheckedCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.AgentRoleUncheckedCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryUncheckedCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventUncheckedCreateNestedManyWithoutAgentInput
 }
 
 export type AgentCreateOrConnectWithoutSessionsInput = {
@@ -627,6 +719,9 @@ export type AgentUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.AgentRoleUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUpdateManyWithoutAgentNestedInput
 }
 
 export type AgentUncheckedUpdateWithoutSessionsInput = {
@@ -640,6 +735,243 @@ export type AgentUncheckedUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.AgentRoleUncheckedUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUncheckedUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUncheckedUpdateManyWithoutAgentNestedInput
+}
+
+export type AgentCreateWithoutThreadEntriesInput = {
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  threadEvents?: Prisma.ThreadEventCreateNestedManyWithoutAgentInput
+}
+
+export type AgentUncheckedCreateWithoutThreadEntriesInput = {
+  id?: number
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleUncheckedCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  threadEvents?: Prisma.ThreadEventUncheckedCreateNestedManyWithoutAgentInput
+}
+
+export type AgentCreateOrConnectWithoutThreadEntriesInput = {
+  where: Prisma.AgentWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgentCreateWithoutThreadEntriesInput, Prisma.AgentUncheckedCreateWithoutThreadEntriesInput>
+}
+
+export type AgentUpsertWithoutThreadEntriesInput = {
+  update: Prisma.XOR<Prisma.AgentUpdateWithoutThreadEntriesInput, Prisma.AgentUncheckedUpdateWithoutThreadEntriesInput>
+  create: Prisma.XOR<Prisma.AgentCreateWithoutThreadEntriesInput, Prisma.AgentUncheckedCreateWithoutThreadEntriesInput>
+  where?: Prisma.AgentWhereInput
+}
+
+export type AgentUpdateToOneWithWhereWithoutThreadEntriesInput = {
+  where?: Prisma.AgentWhereInput
+  data: Prisma.XOR<Prisma.AgentUpdateWithoutThreadEntriesInput, Prisma.AgentUncheckedUpdateWithoutThreadEntriesInput>
+}
+
+export type AgentUpdateWithoutThreadEntriesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  threadEvents?: Prisma.ThreadEventUpdateManyWithoutAgentNestedInput
+}
+
+export type AgentUncheckedUpdateWithoutThreadEntriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUncheckedUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  threadEvents?: Prisma.ThreadEventUncheckedUpdateManyWithoutAgentNestedInput
+}
+
+export type AgentCreateWithoutThreadEventsInput = {
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryCreateNestedManyWithoutAuthorAgentInput
+}
+
+export type AgentUncheckedCreateWithoutThreadEventsInput = {
+  id?: number
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleUncheckedCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAgentInput
+  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  threadEntries?: Prisma.ThreadEntryUncheckedCreateNestedManyWithoutAuthorAgentInput
+}
+
+export type AgentCreateOrConnectWithoutThreadEventsInput = {
+  where: Prisma.AgentWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgentCreateWithoutThreadEventsInput, Prisma.AgentUncheckedCreateWithoutThreadEventsInput>
+}
+
+export type AgentUpsertWithoutThreadEventsInput = {
+  update: Prisma.XOR<Prisma.AgentUpdateWithoutThreadEventsInput, Prisma.AgentUncheckedUpdateWithoutThreadEventsInput>
+  create: Prisma.XOR<Prisma.AgentCreateWithoutThreadEventsInput, Prisma.AgentUncheckedCreateWithoutThreadEventsInput>
+  where?: Prisma.AgentWhereInput
+}
+
+export type AgentUpdateToOneWithWhereWithoutThreadEventsInput = {
+  where?: Prisma.AgentWhereInput
+  data: Prisma.XOR<Prisma.AgentUpdateWithoutThreadEventsInput, Prisma.AgentUncheckedUpdateWithoutThreadEventsInput>
+}
+
+export type AgentUpdateWithoutThreadEventsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUpdateManyWithoutAuthorAgentNestedInput
+}
+
+export type AgentUncheckedUpdateWithoutThreadEventsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUncheckedUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutAgentNestedInput
+  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  threadEntries?: Prisma.ThreadEntryUncheckedUpdateManyWithoutAuthorAgentNestedInput
+}
+
+export type AgentCreateWithoutAssignedTicketsInput = {
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutAgentInput
+  threadEntries?: Prisma.ThreadEntryCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventCreateNestedManyWithoutAgentInput
+}
+
+export type AgentUncheckedCreateWithoutAssignedTicketsInput = {
+  id?: number
+  email: string
+  name: string
+  passwordHash: string
+  isActive?: boolean
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.AgentRoleUncheckedCreateNestedManyWithoutAgentInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAgentInput
+  threadEntries?: Prisma.ThreadEntryUncheckedCreateNestedManyWithoutAuthorAgentInput
+  threadEvents?: Prisma.ThreadEventUncheckedCreateNestedManyWithoutAgentInput
+}
+
+export type AgentCreateOrConnectWithoutAssignedTicketsInput = {
+  where: Prisma.AgentWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgentCreateWithoutAssignedTicketsInput, Prisma.AgentUncheckedCreateWithoutAssignedTicketsInput>
+}
+
+export type AgentUpsertWithoutAssignedTicketsInput = {
+  update: Prisma.XOR<Prisma.AgentUpdateWithoutAssignedTicketsInput, Prisma.AgentUncheckedUpdateWithoutAssignedTicketsInput>
+  create: Prisma.XOR<Prisma.AgentCreateWithoutAssignedTicketsInput, Prisma.AgentUncheckedCreateWithoutAssignedTicketsInput>
+  where?: Prisma.AgentWhereInput
+}
+
+export type AgentUpdateToOneWithWhereWithoutAssignedTicketsInput = {
+  where?: Prisma.AgentWhereInput
+  data: Prisma.XOR<Prisma.AgentUpdateWithoutAssignedTicketsInput, Prisma.AgentUncheckedUpdateWithoutAssignedTicketsInput>
+}
+
+export type AgentUpdateWithoutAssignedTicketsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutAgentNestedInput
+  threadEntries?: Prisma.ThreadEntryUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUpdateManyWithoutAgentNestedInput
+}
+
+export type AgentUncheckedUpdateWithoutAssignedTicketsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.AgentRoleUncheckedUpdateManyWithoutAgentNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutAgentNestedInput
+  threadEntries?: Prisma.ThreadEntryUncheckedUpdateManyWithoutAuthorAgentNestedInput
+  threadEvents?: Prisma.ThreadEventUncheckedUpdateManyWithoutAgentNestedInput
 }
 
 
@@ -650,11 +982,17 @@ export type AgentUncheckedUpdateWithoutSessionsInput = {
 export type AgentCountOutputType = {
   roles: number
   sessions: number
+  assignedTickets: number
+  threadEntries: number
+  threadEvents: number
 }
 
 export type AgentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | AgentCountOutputTypeCountRolesArgs
   sessions?: boolean | AgentCountOutputTypeCountSessionsArgs
+  assignedTickets?: boolean | AgentCountOutputTypeCountAssignedTicketsArgs
+  threadEntries?: boolean | AgentCountOutputTypeCountThreadEntriesArgs
+  threadEvents?: boolean | AgentCountOutputTypeCountThreadEventsArgs
 }
 
 /**
@@ -681,6 +1019,27 @@ export type AgentCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.SessionWhereInput
 }
 
+/**
+ * AgentCountOutputType without action
+ */
+export type AgentCountOutputTypeCountAssignedTicketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TicketWhereInput
+}
+
+/**
+ * AgentCountOutputType without action
+ */
+export type AgentCountOutputTypeCountThreadEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ThreadEntryWhereInput
+}
+
+/**
+ * AgentCountOutputType without action
+ */
+export type AgentCountOutputTypeCountThreadEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ThreadEventWhereInput
+}
+
 
 export type AgentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -694,6 +1053,9 @@ export type AgentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   roles?: boolean | Prisma.Agent$rolesArgs<ExtArgs>
   sessions?: boolean | Prisma.Agent$sessionsArgs<ExtArgs>
+  assignedTickets?: boolean | Prisma.Agent$assignedTicketsArgs<ExtArgs>
+  threadEntries?: boolean | Prisma.Agent$threadEntriesArgs<ExtArgs>
+  threadEvents?: boolean | Prisma.Agent$threadEventsArgs<ExtArgs>
   _count?: boolean | Prisma.AgentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["agent"]>
 
@@ -715,6 +1077,9 @@ export type AgentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type AgentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | Prisma.Agent$rolesArgs<ExtArgs>
   sessions?: boolean | Prisma.Agent$sessionsArgs<ExtArgs>
+  assignedTickets?: boolean | Prisma.Agent$assignedTicketsArgs<ExtArgs>
+  threadEntries?: boolean | Prisma.Agent$threadEntriesArgs<ExtArgs>
+  threadEvents?: boolean | Prisma.Agent$threadEventsArgs<ExtArgs>
   _count?: boolean | Prisma.AgentCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -723,6 +1088,9 @@ export type $AgentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     roles: Prisma.$AgentRolePayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
+    assignedTickets: Prisma.$TicketPayload<ExtArgs>[]
+    threadEntries: Prisma.$ThreadEntryPayload<ExtArgs>[]
+    threadEvents: Prisma.$ThreadEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1076,6 +1444,9 @@ export interface Prisma__AgentClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   roles<T extends Prisma.Agent$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agent$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.Agent$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agent$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignedTickets<T extends Prisma.Agent$assignedTicketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agent$assignedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threadEntries<T extends Prisma.Agent$threadEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agent$threadEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ThreadEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  threadEvents<T extends Prisma.Agent$threadEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Agent$threadEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ThreadEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1506,6 +1877,78 @@ export type Agent$sessionsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * Agent.assignedTickets
+ */
+export type Agent$assignedTicketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Ticket
+   */
+  select?: Prisma.TicketSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Ticket
+   */
+  omit?: Prisma.TicketOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TicketInclude<ExtArgs> | null
+  where?: Prisma.TicketWhereInput
+  orderBy?: Prisma.TicketOrderByWithRelationInput | Prisma.TicketOrderByWithRelationInput[]
+  cursor?: Prisma.TicketWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
+}
+
+/**
+ * Agent.threadEntries
+ */
+export type Agent$threadEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ThreadEntry
+   */
+  select?: Prisma.ThreadEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ThreadEntry
+   */
+  omit?: Prisma.ThreadEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ThreadEntryInclude<ExtArgs> | null
+  where?: Prisma.ThreadEntryWhereInput
+  orderBy?: Prisma.ThreadEntryOrderByWithRelationInput | Prisma.ThreadEntryOrderByWithRelationInput[]
+  cursor?: Prisma.ThreadEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ThreadEntryScalarFieldEnum | Prisma.ThreadEntryScalarFieldEnum[]
+}
+
+/**
+ * Agent.threadEvents
+ */
+export type Agent$threadEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ThreadEvent
+   */
+  select?: Prisma.ThreadEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ThreadEvent
+   */
+  omit?: Prisma.ThreadEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ThreadEventInclude<ExtArgs> | null
+  where?: Prisma.ThreadEventWhereInput
+  orderBy?: Prisma.ThreadEventOrderByWithRelationInput | Prisma.ThreadEventOrderByWithRelationInput[]
+  cursor?: Prisma.ThreadEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ThreadEventScalarFieldEnum | Prisma.ThreadEventScalarFieldEnum[]
 }
 
 /**

@@ -12,4 +12,5 @@ model Department {
   parent   Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children Department[] @relation("DepartmentHierarchy")
   categories CategoryDepartment[]
+  tickets    Ticket[]
 }

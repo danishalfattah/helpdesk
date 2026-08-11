@@ -18,6 +18,7 @@ model Category {
   children Category[] @relation("CategoryHierarchy")
 
   departments CategoryDepartment[]
+  tickets     Ticket[]
 
   @@index([parentId])
 }
