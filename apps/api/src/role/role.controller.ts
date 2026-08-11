@@ -42,8 +42,10 @@ export class RoleController {
 
   @Patch('roles/:id')
   @RequirePermission('role.manage')
-  @UsePipes(new ZodValidationPipe(UpdateRoleRequest))
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateRoleRequest): Promise<RoleResponse> {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(UpdateRoleRequest)) body: UpdateRoleRequest,
+  ): Promise<RoleResponse> {
     return this.roles.update(id, body);
   }
 
@@ -55,8 +57,10 @@ export class RoleController {
 
   @Post('roles/:id/permissions')
   @RequirePermission('role.manage')
-  @UsePipes(new ZodValidationPipe(AssignPermissionRequest))
-  assignPermission(@Param('id', ParseIntPipe) id: number, @Body() body: AssignPermissionRequest): Promise<void> {
+  assignPermission(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(AssignPermissionRequest)) body: AssignPermissionRequest,
+  ): Promise<void> {
     return this.roles.assignPermission(id, body.permissionId);
   }
 

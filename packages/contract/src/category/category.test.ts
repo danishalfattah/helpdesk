@@ -20,6 +20,15 @@ describe('UpdateCategoryRequest', () => {
   it('menerima objek kosong (semua field opsional)', () => {
     expect(UpdateCategoryRequest.safeParse({}).success).toBe(true);
   });
+
+  it('menerima dan MEMPERTAHANKAN isActive -- bukan cuma lolos validasi', () => {
+    // Regresi: sebelum .extend(), isActive lolos safeParse tapi datanya
+    // dibuang diam-diam oleh Zod, jadi endpoint PATCH tidak pernah benar-benar
+    // mengubah status aktif walau tidak ada error.
+    const hasil = UpdateCategoryRequest.safeParse({ isActive: false });
+    expect(hasil.success).toBe(true);
+    expect(hasil.data).toEqual({ isActive: false });
+  });
 });
 
 describe('AssignDepartmentsRequest', () => {

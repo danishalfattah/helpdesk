@@ -8,7 +8,15 @@ export const CreateCategoryRequest = z.object({
 });
 export type CreateCategoryRequest = z.infer<typeof CreateCategoryRequest>;
 
-export const UpdateCategoryRequest = CreateCategoryRequest.partial();
+// .partial() saja tidak cukup -- CategoryService.update() membaca input.isActive
+// (buat toggle aktif/nonaktif), tapi field itu tidak pernah ada di CreateCategoryRequest.
+// Tanpa .extend() ini, Zod diam-diam MEMBUANG isActive dari body (default z.object()
+// men-strip key yang tidak dikenal), jadi endpoint PATCH tidak pernah benar-benar
+// mengubah status aktif walau tidak ada error sama sekali. Ketahuan lewat #20 saat
+// halaman Category butuh toggle aktif/nonaktif, sama seperti Department.
+export const UpdateCategoryRequest = CreateCategoryRequest.partial().extend({
+  isActive: z.boolean().optional(),
+});
 export type UpdateCategoryRequest = z.infer<typeof UpdateCategoryRequest>;
 
 export const AssignDepartmentsRequest = z.object({

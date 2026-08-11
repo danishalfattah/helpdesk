@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "pretypecheck": "pnpm --filter @helpdesk/contract build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.prisma.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts"

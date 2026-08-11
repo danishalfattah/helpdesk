@@ -13,6 +13,7 @@ interface UpdateInput {
   name?: string;
   isActive?: boolean;
   parentId?: number | null;
+  departmentIds?: number[];
 }
 
 type CategoryRow = {
@@ -107,6 +108,13 @@ export class CategoryService {
         ...(input.parentId !== undefined ? { parentId: input.parentId } : {}),
       },
     });
+
+    // Array kosong itu valid dan berarti "berlaku di semua department" (lihat
+    // assignDepartments) -- jadi ceknya `!== undefined`, bukan truthy check,
+    // supaya pengguna bisa menghapus semua department lewat form ubah.
+    if (input.departmentIds !== undefined) {
+      await this.assignDepartments(id, input.departmentIds);
+    }
 
     return this.findOne(id);
   }
