@@ -5,7 +5,9 @@ import { AuthModule } from './auth/auth.module.js';
 import { CategoryModule } from './category/category.module.js';
 import { DepartmentModule } from './department/department.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { PriorityModule } from './priority/priority.module.js';
 import { RoleModule } from './role/role.module.js';
+import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { RoleModule } from './role/role.module.js';
     CategoryModule,
     DepartmentModule,
     RoleModule,
+    PriorityModule,
+    TicketStatusModule,
   ],
 })
 export class AppModule {}
