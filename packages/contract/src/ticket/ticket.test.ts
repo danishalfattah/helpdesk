@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CreateTicketRequest } from './ticket.js';
+import { CreateTicketRequest, UpdateTicketRequest } from './ticket.js';
 
 const dasar = {
   subject: 'Laptop tidak bisa nyala',
@@ -48,5 +48,28 @@ describe('CreateTicketRequest', () => {
   it('mengubah email pelapor jadi huruf kecil dan membuang spasi tepi', () => {
     const hasil = CreateTicketRequest.parse({ ...dasar, requesterEmail: '  Pelapor@Socfindo.co.id  ' });
     expect(hasil.requesterEmail).toBe('pelapor@socfindo.co.id');
+  });
+});
+
+describe('UpdateTicketRequest', () => {
+  it('menerima objek kosong (semua field opsional)', () => {
+    expect(UpdateTicketRequest.safeParse({}).success).toBe(true);
+  });
+
+  it('menerima categoryId null untuk menghapus kategori', () => {
+    expect(UpdateTicketRequest.safeParse({ categoryId: null }).success).toBe(true);
+  });
+
+  it('menerima statusId untuk pindah status', () => {
+    expect(UpdateTicketRequest.safeParse({ statusId: 3 }).success).toBe(true);
+  });
+
+  it('menolak subjek kosong', () => {
+    expect(UpdateTicketRequest.safeParse({ subject: '' }).success).toBe(false);
+  });
+
+  it('tidak menerima assigneeId — penugasan adalah aksi terpisah', () => {
+    const hasil = UpdateTicketRequest.parse({ assigneeId: 5 } as never);
+    expect(hasil).not.toHaveProperty('assigneeId');
   });
 });

@@ -4,7 +4,7 @@ import { TicketService } from './ticket.service.js';
 
 function buatPrismaPalsu() {
   return {
-    ticket: { findUnique: vi.fn(), create: vi.fn(), aggregate: vi.fn() },
+    ticket: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), aggregate: vi.fn() },
     department: { findUnique: vi.fn() },
     category: { findUnique: vi.fn() },
     categoryDepartment: { findMany: vi.fn() },
@@ -13,6 +13,20 @@ function buatPrismaPalsu() {
     requester: { upsert: vi.fn() },
   };
 }
+
+const tiketTerbuka = (over: Record<string, unknown> = {}) => ({
+  id: 1,
+  number: 1000015,
+  subject: 'Laptop tidak bisa nyala',
+  requesterId: 10,
+  departmentId: 1,
+  categoryId: null,
+  statusId: 2,
+  priorityId: 3,
+  assigneeId: null,
+  status: { id: 2, name: 'New', isClosed: false, sortOrder: 1 },
+  ...over,
+});
 
 const inputDasar = {
   subject: 'Laptop tidak bisa nyala',
@@ -141,6 +155,76 @@ describe('TicketService', () => {
       prisma.ticket.findUnique.mockResolvedValueOnce({ id: 1, number: 1000015 });
       const hasil = await service.findOne(1);
       expect(hasil.id).toBe(1);
+    });
+  });
+
+  describe('update', () => {
+    it('menolak update apa pun kalau tiket sudah closed', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(
+        tiketTerbuka({ status: { id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 } }),
+      );
+      await expect(service.update(1, { subject: 'Ganti subjek' })).rejects.toMatchObject({
+        code: ErrorCode.TICKET_CLOSED,
+      });
+      expect(prisma.ticket.update).not.toHaveBeenCalled();
+    });
+
+    it('mengubah subjek tiket yang masih terbuka', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ subject: 'Ganti subjek' }));
+
+      const hasil = await service.update(1, { subject: 'Ganti subjek' });
+
+      expect(hasil.subject).toBe('Ganti subjek');
+      expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { subject: 'Ganti subjek' } });
+    });
+
+    it('set closedAt otomatis saat status dipindah ke status yang isClosed', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      prisma.ticketStatus.findUnique.mockResolvedValueOnce({ id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 });
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ statusId: 8 }));
+
+      await service.update(1, { statusId: 8 });
+
+      expect(prisma.ticket.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { statusId: 8, closedAt: expect.any(Date) },
+      });
+    });
+
+    it('menolak categoryId baru yang scoping-nya tidak cocok dengan department tiket', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka({ departmentId: 1 }));
+      prisma.category.findUnique.mockResolvedValueOnce({ id: 5, name: 'Jaringan', isActive: true, parentId: null });
+      prisma.categoryDepartment.findMany.mockResolvedValueOnce([{ categoryId: 5, departmentId: 2 }]);
+
+      await expect(service.update(1, { categoryId: 5 })).rejects.toMatchObject({
+        code: ErrorCode.TICKET_CATEGORY_NOT_ALLOWED,
+      });
+    });
+
+    it('menolak update kalau tiket tidak ada', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(null);
+      await expect(service.update(99, { subject: 'x' })).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_FOUND });
+    });
+  });
+
+  describe('reopen', () => {
+    it('menolak reopen kalau tiket belum closed', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      await expect(service.reopen(1)).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_CLOSED });
+      expect(prisma.ticket.update).not.toHaveBeenCalled();
+    });
+
+    it('memindahkan status ke Re-Opened dan mengosongkan closedAt', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(
+        tiketTerbuka({ status: { id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 } }),
+      );
+      prisma.ticketStatus.findUnique.mockResolvedValueOnce({ id: 5, name: 'Re-Opened', isClosed: false, sortOrder: 5 });
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ statusId: 5 }));
+
+      await service.reopen(1);
+
+      expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { statusId: 5, closedAt: null } });
     });
   });
 });

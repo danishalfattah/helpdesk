@@ -1,5 +1,11 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes } from '@nestjs/common';
-import { CreateTicketRequest, type CreateTicketResponse, type TicketDto } from '@helpdesk/contract';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  CreateTicketRequest,
+  UpdateTicketRequest,
+  type CreateTicketResponse,
+  type TicketDto,
+  type UpdateTicketResponse,
+} from '@helpdesk/contract';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { PermissionGuard } from '../auth/permission.guard.js';
 import { RequirePermission } from '../auth/require-permission.decorator.js';
@@ -22,5 +28,21 @@ export class TicketController {
   @UsePipes(new ZodValidationPipe(CreateTicketRequest))
   async create(@Body() body: CreateTicketRequest): Promise<CreateTicketResponse> {
     return { ticket: await this.tickets.create(body) };
+  }
+
+  @Patch(':id')
+  @RequirePermission('ticket.edit')
+  @UsePipes(new ZodValidationPipe(UpdateTicketRequest))
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateTicketRequest,
+  ): Promise<UpdateTicketResponse> {
+    return { ticket: await this.tickets.update(id, body) };
+  }
+
+  @Post(':id/reopen')
+  @RequirePermission('ticket.edit')
+  async reopen(@Param('id', ParseIntPipe) id: number): Promise<UpdateTicketResponse> {
+    return { ticket: await this.tickets.reopen(id) };
   }
 }
