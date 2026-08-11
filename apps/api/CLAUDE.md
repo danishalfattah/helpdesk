@@ -147,6 +147,25 @@ jalan — jadi kalau ada yang mengubah skema di `packages/contract/src`, cukup
 jalankan `pnpm --filter @helpdesk/api dev`/`test` seperti biasa, tidak perlu build
 manual dulu.
 
+## Jangan masukkan `prisma/**/*` ke `tsconfig.json` utama
+
+Ini sudah terjadi **dua kali** — kalau kepikiran nambahin `"prisma/**/*"` atau
+`"prisma.config.ts"` ke `include` di `tsconfig.json`, **jangan**. Itu bikin
+`nest start`/`nest build`/`typecheck` gagal dengan `TS6059: File ... is not under
+'rootDir'`, karena `nest-cli.json` punya `sourceRoot: "src"` yang memaksa NestJS
+cuma boleh mengompilasi dari `src/`. File di `prisma/` (termasuk `prisma.config.ts`
+di root `apps/api/`) ada di luar itu.
+
+**Kalau mau `seed.ts`/`prisma.config.ts` ikut ke-typecheck** (alasan yang wajar,
+sudah kejadian sebelumnya), pakai `tsconfig.prisma.json` yang sudah dipisah khusus
+untuk itu — tanpa `rootDir`/`sourceRoot`, jadi bebas mengompilasi file dari mana
+saja. Script `pnpm typecheck` sudah menjalankan keduanya
+(`tsc --noEmit && tsc --noEmit -p tsconfig.prisma.json`).
+
+`seed.ts` sendiri tetap dijalankan lewat `tsx` (lihat `prisma.config.ts`), bukan
+dikompilasi oleh NestJS — jadi dia tidak perlu dan tidak boleh ada di
+`tsconfig.json` utama sama sekali.
+
 ## Catatan Vitest
 
 Vitest di sini memakai `unplugin-swc`, bukan esbuild bawaan. Alasannya esbuild tidak

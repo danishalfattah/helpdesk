@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "noEmit": true,
+    "baseUrl": "./"
+  },
+  "include": ["prisma/**/*", "prisma.config.ts"]
+}

@@ -53,6 +53,36 @@ describe('CategoryService', () => {
     });
   });
 
+  describe('update', () => {
+    it('mengganti daftar department kalau departmentIds dikirim', async () => {
+      const prisma = buatPrisma();
+      prisma.category.findUnique.mockResolvedValue(kat());
+      prisma.department.findUnique.mockResolvedValue({ id: 2 });
+      const service = new CategoryService(prisma as never);
+      await service.update(1, { departmentIds: [2] });
+      expect(prisma.categoryDepartment.deleteMany).toHaveBeenCalledWith({ where: { categoryId: 1 } });
+      expect(prisma.categoryDepartment.createMany).toHaveBeenCalled();
+    });
+
+    it('array kosong tetap memanggil assignDepartments -- melepas semua batasan department', async () => {
+      const prisma = buatPrisma();
+      prisma.category.findUnique.mockResolvedValue(kat());
+      const service = new CategoryService(prisma as never);
+      await service.update(1, { departmentIds: [] });
+      expect(prisma.categoryDepartment.deleteMany).toHaveBeenCalledWith({ where: { categoryId: 1 } });
+      expect(prisma.categoryDepartment.createMany).not.toHaveBeenCalled();
+    });
+
+    it('tidak menyentuh department kalau departmentIds tidak dikirim sama sekali', async () => {
+      const prisma = buatPrisma();
+      prisma.category.findUnique.mockResolvedValue(kat());
+      const service = new CategoryService(prisma as never);
+      await service.update(1, { name: 'Jaringan Baru' });
+      expect(prisma.categoryDepartment.deleteMany).not.toHaveBeenCalled();
+      expect(prisma.categoryDepartment.createMany).not.toHaveBeenCalled();
+    });
+  });
+
   describe('findOne', () => {
     it('melempar DomainError kalau tidak ditemukan', async () => {
       const prisma = buatPrisma();

@@ -36,8 +36,10 @@ export class CategoryController {
 
   @Patch(':id')
   @RequirePermission('category.manage')
-  @UsePipes(new ZodValidationPipe(UpdateCategoryRequest))
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateCategoryRequest): Promise<CategoryResponse> {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(UpdateCategoryRequest)) body: UpdateCategoryRequest,
+  ): Promise<CategoryResponse> {
     return this.categories.update(id, body);
   }
 
@@ -49,10 +51,9 @@ export class CategoryController {
 
   @Post(':id/departments')
   @RequirePermission('category.manage')
-  @UsePipes(new ZodValidationPipe(AssignDepartmentsRequest))
   assignDepartments(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: AssignDepartmentsRequest,
+    @Body(new ZodValidationPipe(AssignDepartmentsRequest)) body: AssignDepartmentsRequest,
   ): Promise<void> {
     return this.categories.assignDepartments(id, body.departmentIds);
   }
