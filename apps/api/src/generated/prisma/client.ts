@@ -84,3 +84,38 @@ export type CategoryDepartment = Prisma.CategoryDepartmentModel
  * 
  */
 export type Department = Prisma.DepartmentModel
+/**
+ * Model Requester
+ * 
+ */
+export type Requester = Prisma.RequesterModel
+/**
+ * Model ThreadEntry
+ * 
+ */
+export type ThreadEntry = Prisma.ThreadEntryModel
+/**
+ * Model ThreadEvent
+ * 
+ */
+export type ThreadEvent = Prisma.ThreadEventModel
+/**
+ * Model Attachment
+ * 
+ */
+export type Attachment = Prisma.AttachmentModel
+/**
+ * Model Ticket
+ * 
+ */
+export type Ticket = Prisma.TicketModel
+/**
+ * Model TicketStatus
+ * 
+ */
+export type TicketStatus = Prisma.TicketStatusModel
+/**
+ * Model Priority
+ * 
+ */
+export type Priority = Prisma.PriorityModel

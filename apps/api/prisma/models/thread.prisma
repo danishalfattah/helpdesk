@@ -1,0 +1,70 @@
+model ThreadEntry {
+  id       Int @id @default(autoincrement())
+  ticketId Int
+
+  // Persis satu dari dua ini terisi — requester yang membalas (email/portal)
+  // atau agent yang membalas/mencatat. Ditegakkan di service (issue #27),
+  // bukan di schema, sama seperti pola constraint lain di project ini.
+  authorAgentId     Int?
+  authorRequesterId Int?
+
+  // Catatan internal tidak terlihat requester, balasan terlihat (issue #27).
+  isInternal Boolean @default(false)
+
+  // Apa adanya, TIDAK disanitasi saat disimpan — sanitasi HTML wajib di jalur
+  // TAMPILAN (issue #33), bukan di sini. Cacat osTicket paling halus (spec §12).
+  body String @db.NVarChar(Max)
+
+  createdAt DateTime @default(now())
+
+  ticket          Ticket     @relation(fields: [ticketId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  authorAgent     Agent?     @relation(fields: [authorAgentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  authorRequester Requester? @relation(fields: [authorRequesterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  attachments Attachment[]
+
+  @@index([ticketId])
+}
+
+// Jejak audit otomatis (bukan ditulis manual agent) — tiap perubahan
+// status/assignee/department menulis satu baris di sini (spec §8.3, issue #28).
+model ThreadEvent {
+  id       Int @id @default(autoincrement())
+  ticketId Int
+  agentId  Int? // null kalau event berasal dari sistem (mis. job overdue terjadwal)
+
+  // String tetap (bukan tabel lookup) karena bukan nilai yang admin edit —
+  // ditentukan kode, mirip ErrorCode. Contoh: 'status_changed', 'assignee_changed'.
+  eventType String  @db.NVarChar(32)
+  oldValue  String? @db.NVarChar(255)
+  newValue  String? @db.NVarChar(255)
+
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  agent  Agent? @relation(fields: [agentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([ticketId])
+}
+
+// Melekat ke ThreadEntry (pesan tempat file itu dilampirkan), bukan ke Ticket
+// langsung — file selalu masuk lewat satu balasan/catatan/email tertentu.
+// Database cuma metadata; biner ada di filesystem (spec §8.2).
+model Attachment {
+  id            Int    @id @default(autoincrement())
+  threadEntryId Int
+  originalName  String @db.NVarChar(255)
+  mimeType      String @db.NVarChar(128)
+  size          Int
+
+  // Relatif terhadap STORAGE_ROOT, supaya root bisa dipindah ke NAS/share UNC
+  // tanpa mengubah data (spec §8.2).
+  path     String @db.NVarChar(500)
+  checksum String @db.NVarChar(64) // SHA-256 hex
+
+  createdAt DateTime @default(now())
+
+  threadEntry ThreadEntry @relation(fields: [threadEntryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([threadEntryId])
+}

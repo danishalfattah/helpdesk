@@ -1,0 +1,11 @@
+// Model minimal untuk sekarang — hanya untuk direferensikan Ticket.requesterId.
+// Autentikasi pelapor (login portal, password) ditambahkan di issue #55 (Tahap 5).
+model Requester {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.NVarChar(255)
+  name      String   @db.NVarChar(128)
+  createdAt DateTime @default(now())
+
+  tickets      Ticket[]
+  threadEntries ThreadEntry[]
+}
