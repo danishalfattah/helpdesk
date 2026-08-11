@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { LoginRequest, type LoginResponse, type AgentProfile } from '@helpdesk/contract';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { AuthService } from './auth.service.js';
-import { SessionService, SESSION_COOKIE, SESSION_TTL_MENIT } from './session.service.js';
+import { SessionService, SESSION_COOKIE, sessionCookieOptions } from './session.service.js';
 import { PermissionGuard } from './permission.guard.js';
 
 @Controller('auth')
@@ -23,13 +23,7 @@ export class AuthController {
 
     // httpOnly: tidak bisa dibaca JavaScript, jadi kebal pencurian lewat XSS.
     // sameSite lax: cukup untuk aplikasi internal, tetap menahan CSRF dasar.
-    res.cookie(SESSION_COOKIE, sessionId, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false, // di produksi (HTTPS) ubah jadi true
-      maxAge: SESSION_TTL_MENIT * 60_000,
-      path: '/',
-    });
+    res.cookie(SESSION_COOKIE, sessionId, sessionCookieOptions);
 
     return { agent };
   }

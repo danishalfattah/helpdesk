@@ -6,9 +6,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { SESSION_COOKIE } from './session.service.js';
+import { SESSION_COOKIE, SESSION_TTL_MENIT, sessionCookieOptions } from './session.service.js';
 import { PERMISSION_KEY } from './require-permission.decorator.js';
 
 /**
@@ -41,6 +41,13 @@ export class PermissionGuard implements CanActivate {
     if (!sesi || sesi.expiresAt <= new Date() || !sesi.agent.isActive) {
       throw new UnauthorizedException('Sesi tidak berlaku lagi.');
     }
+
+    // Idle timeout (spec §6, staff_session_timeout = 30 menit), bukan batas
+    // absolut sejak login — tiap request yang lolos autentikasi menggeser
+    // batas waktu ke depan, di DB maupun cookie di browser.
+    const expiresAt = new Date(Date.now() + SESSION_TTL_MENIT * 60_000);
+    await this.prisma.session.update({ where: { id: sessionId }, data: { expiresAt } });
+    context.switchToHttp().getResponse<Response>().cookie(SESSION_COOKIE, sessionId, sessionCookieOptions);
 
     const permissions = new Set(
       sesi.agent.roles.flatMap((ar) => ar.role.permissions.map((rp) => rp.permission.key)),

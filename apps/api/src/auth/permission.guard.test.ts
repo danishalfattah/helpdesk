@@ -4,8 +4,9 @@ import { PermissionGuard } from './permission.guard.js';
 
 function buatContext(cookies: Record<string, string>) {
   const req: Record<string, unknown> = { cookies };
+  const res = { cookie: vi.fn() };
   return {
-    switchToHttp: () => ({ getRequest: () => req }),
+    switchToHttp: () => ({ getRequest: () => req, getResponse: () => res }),
     getHandler: () => ({}),
     getClass: () => ({}),
   } as unknown as ExecutionContext;
@@ -16,7 +17,9 @@ function buatReflector(permission: string | undefined) {
 }
 
 function buatPrisma(sesi: unknown) {
-  return { session: { findUnique: vi.fn().mockResolvedValue(sesi) } };
+  return {
+    session: { findUnique: vi.fn().mockResolvedValue(sesi), update: vi.fn().mockResolvedValue(undefined) },
+  };
 }
 
 const sesiValid = (permissions: string[]) => ({
@@ -58,5 +61,36 @@ describe('PermissionGuard', () => {
       buatPrisma(sesiValid(['ticket.view'])) as never,
     );
     await expect(guard.canActivate(buatContext({ helpdesk_session: 'abc' }))).rejects.toThrow(ForbiddenException);
+  });
+
+  describe('perpanjangan sesi (idle timeout)', () => {
+    it('memperpanjang expiresAt di DB dan refresh cookie tiap request yang lolos autentikasi', async () => {
+      const prisma = buatPrisma(sesiValid([]));
+      const guard = new PermissionGuard(buatReflector(undefined) as never, prisma as never);
+      const context = buatContext({ helpdesk_session: 'abc' });
+
+      await guard.canActivate(context);
+
+      expect(prisma.session.update).toHaveBeenCalledWith({
+        where: { id: 'abc' },
+        data: { expiresAt: expect.any(Date) },
+      });
+      expect(context.switchToHttp().getResponse().cookie).toHaveBeenCalledWith(
+        'helpdesk_session',
+        'abc',
+        expect.objectContaining({ maxAge: 30 * 60_000 }),
+      );
+    });
+
+    it('tidak memperpanjang sesi yang sudah kedaluwarsa', async () => {
+      const kedaluwarsa = { ...sesiValid([]), expiresAt: new Date(Date.now() - 1000) };
+      const prisma = buatPrisma(kedaluwarsa);
+      const guard = new PermissionGuard(buatReflector(undefined) as never, prisma as never);
+
+      await expect(guard.canActivate(buatContext({ helpdesk_session: 'abc' }))).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(prisma.session.update).not.toHaveBeenCalled();
+    });
   });
 });
