@@ -8,6 +8,10 @@ build/
 .next/
 out/
 *.tsbuildinfo
+# Build artifacts contract yang ter-compile ke src/ (dari postinstall tsc)
+packages/contract/src/**/*.js
+packages/contract/src/**/*.js.map
+packages/contract/src/**/*.d.ts
 
 # Environment — jangan pernah di-commit
 .env
@@ -17,6 +21,14 @@ out/
 # Prisma
 prisma/*.db
 prisma/migrations/dev.db*
+# File JS hasil compile webpack yang tidak sengaja — Prisma CLI baca .ts langsung
+apps/api/prisma.config.js
+apps/api/prisma.config.js.map
+apps/api/prisma.config.d.ts
+apps/api/prisma/seed.js
+apps/api/prisma/seed.js.map
+apps/api/prisma/seed.d.ts
+
 
 # Lampiran — disimpan di filesystem, di luar repo (lihat spec §8.2)
 storage/
