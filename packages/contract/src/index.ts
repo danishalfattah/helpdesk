@@ -9,3 +9,5 @@ export * from './department/update.js';
 export * from './error.js';
 export * from './role/role.js';
 export * from './category/category.js';
+export * from './ticket-status/ticket-status.js';
+export * from './priority/priority.js';
