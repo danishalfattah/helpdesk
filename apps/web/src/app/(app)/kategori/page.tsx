@@ -35,6 +35,23 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // ── Tipe bantu ───────────────────────────────────────────────────────────────
 
@@ -99,6 +116,7 @@ function FormKategori({
   } = useForm<CreateReq | UpdateReq>({ resolver: zodResolver(schema), defaultValues });
 
   const departmentIds = watch('departmentIds') ?? [];
+  const parentId = watch('parentId') ?? null;
 
   function toggleDept(id: number) {
     const next = departmentIds.includes(id) ? departmentIds.filter((d) => d !== id) : [...departmentIds, id];
@@ -119,26 +137,23 @@ function FormKategori({
 
       <div className="space-y-1">
         <Label htmlFor="cat-parent">Kategori Induk (opsional)</Label>
-        <select
-          id="cat-parent"
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          {...register('parentId', {
-            // Field yang tidak pernah disentuh user dapat nilai mentah dari
-            // defaultValues (null), bukan string DOM (''). `null === ''` itu
-            // false, jadi tanpa cek `v == null` di sini akan jatuh ke
-            // `Number(null)` yang hasilnya 0 -- bukan null -- dan salah
-            // dikira "induk id 0" oleh server.
-            setValueAs: (v) => (v === '' || v == null ? null : Number(v)),
-          })}
+        <Select
+          value={parentId == null ? 'none' : String(parentId)}
+          onValueChange={(v) => setValue('parentId', v === 'none' ? null : Number(v), { shouldDirty: true })}
         >
-          <option value="">— Tanpa induk (tingkat 1) —</option>
-          {indukOptions.map(({ kat, level }) => (
-            <option key={kat.id} value={kat.id}>
-              {'— '.repeat(level - 1)}
-              {kat.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="cat-parent" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">— Tanpa induk (tingkat 1) —</SelectItem>
+            {indukOptions.map(({ kat, level }) => (
+              <SelectItem key={kat.id} value={String(kat.id)}>
+                {'— '.repeat(level - 1)}
+                {kat.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">
@@ -293,8 +308,10 @@ export default function HalamanKategori() {
 
   const [dialogTambah, setDialogTambah] = useState(false);
   const [dialogUbah, setDialogUbah] = useState<CategoryResponse | null>(null);
+  const [dialogHapus, setDialogHapus] = useState<CategoryResponse | null>(null);
   const [sedangProses, setSedangProses] = useState(false);
   const [errorForm, setErrorForm] = useState('');
+  const [errorAksi, setErrorAksi] = useState('');
 
   async function muat() {
     setMemuat(true);
@@ -348,6 +365,7 @@ export default function HalamanKategori() {
   }
 
   async function handleToggleAktif(kat: CategoryResponse) {
+    setErrorAksi('');
     try {
       await apiFetch(`/categories/${kat.id}`, {
         method: 'PATCH',
@@ -355,17 +373,19 @@ export default function HalamanKategori() {
       });
       await muat();
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'Gagal mengubah status.');
+      setErrorAksi(e instanceof ApiError ? e.message : 'Gagal mengubah status.');
     }
   }
 
-  async function handleHapus(kat: CategoryResponse) {
-    if (!confirm(`Hapus kategori "${kat.name}"?`)) return;
+  async function handleHapus() {
+    if (!dialogHapus) return;
+    setErrorAksi('');
     try {
-      await apiFetch(`/categories/${kat.id}`, { method: 'DELETE' });
+      await apiFetch(`/categories/${dialogHapus.id}`, { method: 'DELETE' });
+      setDialogHapus(null);
       await muat();
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'Gagal menghapus kategori.');
+      setErrorAksi(e instanceof ApiError ? e.message : 'Gagal menghapus kategori.');
     }
   }
 
@@ -398,6 +418,12 @@ export default function HalamanKategori() {
         </Button>
       </div>
 
+      {errorAksi && (
+        <p role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {errorAksi}
+        </p>
+      )}
+
       {memuat ? (
         <div className="flex items-center justify-center gap-2 py-12 text-muted-foreground">
           <Loader2 className="size-5 animate-spin" />
@@ -426,7 +452,10 @@ export default function HalamanKategori() {
                 setErrorForm('');
                 setDialogUbah(k);
               }}
-              onHapus={handleHapus}
+              onHapus={(k) => {
+                setErrorAksi('');
+                setDialogHapus(k);
+              }}
               onToggle={handleToggleAktif}
             />
           ))}
@@ -476,6 +505,26 @@ export default function HalamanKategori() {
           )}
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!dialogHapus} onOpenChange={(o) => !o && setDialogHapus(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus kategori?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogHapus && `Kategori "${dialogHapus.name}" akan dihapus. Tindakan ini tidak bisa dibatalkan.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleHapus}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

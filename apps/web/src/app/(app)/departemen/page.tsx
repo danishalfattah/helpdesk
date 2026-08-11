@@ -25,6 +25,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // ── Tipe bantu ───────────────────────────────────────────────────────────────
 
@@ -41,33 +65,6 @@ function susunPohon(depts: DepartmentDto[]): DeptNode[] {
     ...p,
     children: depts.filter((d) => d.parentId === p.id),
   }));
-}
-
-// ── Komponen dialog ringan (tanpa library) ───────────────────────────────────
-
-function DialogModal({
-  judul,
-  onTutup,
-  children,
-}: {
-  judul: string;
-  onTutup: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onTutup}
-    >
-      <div
-        className="bg-card text-card-foreground rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-semibold mb-4">{judul}</h2>
-        {children}
-      </div>
-    </div>
-  );
 }
 
 // ── Komponen form tambah/ubah ─────────────────────────────────────────────────
@@ -94,11 +91,15 @@ function FormDepartment({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<CreateReq | UpdateReq>({
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  const parentId = watch('parentId') ?? null;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -116,18 +117,22 @@ function FormDepartment({
       {/* Induk (opsional) */}
       <div className="space-y-1">
         <Label htmlFor="dept-parent">Department Induk (opsional)</Label>
-        <select
-          id="dept-parent"
-          className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background"
-          {...register('parentId', { setValueAs: (v) => (v === '' ? null : Number(v)) })}
+        <Select
+          value={parentId == null ? 'none' : String(parentId)}
+          onValueChange={(v) => setValue('parentId', v === 'none' ? null : Number(v), { shouldDirty: true })}
         >
-          <option value="">— Tanpa induk (department utama) —</option>
-          {indukOptions.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="dept-parent" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">— Tanpa induk (department utama) —</SelectItem>
+            {indukOptions.map((d) => (
+              <SelectItem key={d.id} value={String(d.id)}>
+                {d.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Error global */}
@@ -161,8 +166,10 @@ export default function HalamanDepartemen() {
   // Dialog state
   const [dialogTambah, setDialogTambah] = useState(false);
   const [dialogUbah, setDialogUbah] = useState<DepartmentDto | null>(null);
+  const [dialogHapus, setDialogHapus] = useState<DepartmentDto | null>(null);
   const [sedangProses, setSedangProses] = useState(false);
   const [errorForm, setErrorForm] = useState('');
+  const [errorAksi, setErrorAksi] = useState('');
 
   // ── Muat data ──────────────────────────────────────────────────────────────
 
@@ -224,6 +231,7 @@ export default function HalamanDepartemen() {
   // ── Toggle aktif/nonaktif ──────────────────────────────────────────────────
 
   async function handleToggleAktif(dept: DepartmentDto) {
+    setErrorAksi('');
     try {
       await apiFetch(`/departments/${dept.id}`, {
         method: 'PATCH',
@@ -231,19 +239,21 @@ export default function HalamanDepartemen() {
       });
       await muat();
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'Gagal mengubah status.');
+      setErrorAksi(e instanceof ApiError ? e.message : 'Gagal mengubah status.');
     }
   }
 
   // ── Hapus ──────────────────────────────────────────────────────────────────
 
-  async function handleHapus(dept: DepartmentDto) {
-    if (!confirm(`Hapus department "${dept.name}"?`)) return;
+  async function handleHapus() {
+    if (!dialogHapus) return;
+    setErrorAksi('');
     try {
-      await apiFetch(`/departments/${dept.id}`, { method: 'DELETE' });
+      await apiFetch(`/departments/${dialogHapus.id}`, { method: 'DELETE' });
+      setDialogHapus(null);
       await muat();
     } catch (e) {
-      alert(e instanceof ApiError ? e.message : 'Gagal menghapus department.');
+      setErrorAksi(e instanceof ApiError ? e.message : 'Gagal menghapus department.');
     }
   }
 
@@ -273,6 +283,12 @@ export default function HalamanDepartemen() {
         </Button>
       </div>
 
+      {errorAksi && (
+        <p role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {errorAksi}
+        </p>
+      )}
+
       {/* Isi */}
       {memuat ? (
         <div className="flex items-center gap-2 text-muted-foreground py-12 justify-center">
@@ -297,7 +313,7 @@ export default function HalamanDepartemen() {
                 dept={induk}
                 level={0}
                 onUbah={() => { setErrorForm(''); setDialogUbah(induk); }}
-                onHapus={() => handleHapus(induk)}
+                onHapus={() => { setErrorAksi(''); setDialogHapus(induk); }}
                 onToggle={() => handleToggleAktif(induk)}
               />
               {/* Baris anak */}
@@ -307,7 +323,7 @@ export default function HalamanDepartemen() {
                   dept={anak}
                   level={1}
                   onUbah={() => { setErrorForm(''); setDialogUbah(anak); }}
-                  onHapus={() => handleHapus(anak)}
+                  onHapus={() => { setErrorAksi(''); setDialogHapus(anak); }}
                   onToggle={() => handleToggleAktif(anak)}
                 />
               ))}
@@ -317,8 +333,12 @@ export default function HalamanDepartemen() {
       )}
 
       {/* Dialog Tambah */}
-      {dialogTambah && (
-        <DialogModal judul="Tambah Department" onTutup={() => setDialogTambah(false)}>
+      <Dialog open={dialogTambah} onOpenChange={setDialogTambah}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tambah Department</DialogTitle>
+            <DialogDescription>Buat department baru, opsional taruh di bawah department lain.</DialogDescription>
+          </DialogHeader>
           <FormDepartment
             schema={CreateDepartmentRequest}
             defaultValues={{ name: '', parentId: null }}
@@ -329,28 +349,55 @@ export default function HalamanDepartemen() {
             onSubmit={handleTambah}
             onBatal={() => setDialogTambah(false)}
           />
-        </DialogModal>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog Ubah */}
-      {dialogUbah && (
-        <DialogModal judul="Ubah Department" onTutup={() => setDialogUbah(null)}>
-          <FormDepartment
-            schema={UpdateDepartmentRequest}
-            defaultValues={{
-              name: dialogUbah.name,
-              parentId: dialogUbah.parentId,
-              isActive: dialogUbah.isActive,
-            }}
-            indukOptions={pilihanInduk.filter((d) => d.id !== dialogUbah.id)}
-            sedangProses={sedangProses}
-            errorGlobal={errorForm}
-            labelSubmit="Simpan"
-            onSubmit={handleUbah}
-            onBatal={() => setDialogUbah(null)}
-          />
-        </DialogModal>
-      )}
+      <Dialog open={!!dialogUbah} onOpenChange={(o) => !o && setDialogUbah(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ubah Department</DialogTitle>
+            <DialogDescription>Ubah nama, induk, atau status aktif department.</DialogDescription>
+          </DialogHeader>
+          {dialogUbah && (
+            <FormDepartment
+              schema={UpdateDepartmentRequest}
+              defaultValues={{
+                name: dialogUbah.name,
+                parentId: dialogUbah.parentId,
+                isActive: dialogUbah.isActive,
+              }}
+              indukOptions={pilihanInduk.filter((d) => d.id !== dialogUbah.id)}
+              sedangProses={sedangProses}
+              errorGlobal={errorForm}
+              labelSubmit="Simpan"
+              onSubmit={handleUbah}
+              onBatal={() => setDialogUbah(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Konfirmasi hapus */}
+      <AlertDialog open={!!dialogHapus} onOpenChange={(o) => !o && setDialogHapus(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus department?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogHapus && `Department "${dialogHapus.name}" akan dihapus. Tindakan ini tidak bisa dibatalkan.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleHapus}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
