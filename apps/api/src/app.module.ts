@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module.js';
+import { CategoryModule } from './category/category.module.js';
 import { DepartmentModule } from './department/department.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RoleModule } from './role/role.module.js';
@@ -13,6 +14,7 @@ import { RoleModule } from './role/role.module.js';
     }),
     PrismaModule,
     AuthModule,
+    CategoryModule,
     DepartmentModule,
     RoleModule,
   ],

@@ -4,3 +4,4 @@ export * from './department/list.js';
 export * from './department/update.js';
 export * from './error.js';
 export * from './role/role.js';
+export * from './category/category.js';

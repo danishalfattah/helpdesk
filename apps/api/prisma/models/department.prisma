@@ -11,4 +11,5 @@ model Department {
   // menyatakan batas kedalaman secara deklaratif.
   parent   Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children Department[] @relation("DepartmentHierarchy")
+  categories CategoryDepartment[]
 }
