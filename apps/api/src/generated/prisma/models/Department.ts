@@ -230,6 +230,7 @@ export type DepartmentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   parent?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   children?: Prisma.DepartmentListRelationFilter
+  categories?: Prisma.CategoryDepartmentListRelationFilter
 }
 
 export type DepartmentOrderByWithRelationInput = {
@@ -241,6 +242,7 @@ export type DepartmentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   parent?: Prisma.DepartmentOrderByWithRelationInput
   children?: Prisma.DepartmentOrderByRelationAggregateInput
+  categories?: Prisma.CategoryDepartmentOrderByRelationAggregateInput
 }
 
 export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -255,6 +257,7 @@ export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   parent?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   children?: Prisma.DepartmentListRelationFilter
+  categories?: Prisma.CategoryDepartmentListRelationFilter
 }, "id" | "name">
 
 export type DepartmentOrderByWithAggregationInput = {
@@ -290,6 +293,7 @@ export type DepartmentCreateInput = {
   updatedAt?: Date | string
   parent?: Prisma.DepartmentCreateNestedOneWithoutChildrenInput
   children?: Prisma.DepartmentCreateNestedManyWithoutParentInput
+  categories?: Prisma.CategoryDepartmentCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateInput = {
@@ -300,6 +304,7 @@ export type DepartmentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.DepartmentUncheckedCreateNestedManyWithoutParentInput
+  categories?: Prisma.CategoryDepartmentUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUpdateInput = {
@@ -309,6 +314,7 @@ export type DepartmentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.DepartmentUpdateOneWithoutChildrenNestedInput
   children?: Prisma.DepartmentUpdateManyWithoutParentNestedInput
+  categories?: Prisma.CategoryDepartmentUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateInput = {
@@ -319,6 +325,7 @@ export type DepartmentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.DepartmentUncheckedUpdateManyWithoutParentNestedInput
+  categories?: Prisma.CategoryDepartmentUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateManyInput = {
@@ -343,6 +350,11 @@ export type DepartmentUncheckedUpdateManyInput = {
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DepartmentScalarRelationFilter = {
+  is?: Prisma.DepartmentWhereInput
+  isNot?: Prisma.DepartmentWhereInput
 }
 
 export type DepartmentNullableScalarRelationFilter = {
@@ -397,6 +409,20 @@ export type DepartmentSumOrderByAggregateInput = {
   parentId?: Prisma.SortOrder
 }
 
+export type DepartmentCreateNestedOneWithoutCategoriesInput = {
+  create?: Prisma.XOR<Prisma.DepartmentCreateWithoutCategoriesInput, Prisma.DepartmentUncheckedCreateWithoutCategoriesInput>
+  connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutCategoriesInput
+  connect?: Prisma.DepartmentWhereUniqueInput
+}
+
+export type DepartmentUpdateOneRequiredWithoutCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.DepartmentCreateWithoutCategoriesInput, Prisma.DepartmentUncheckedCreateWithoutCategoriesInput>
+  connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutCategoriesInput
+  upsert?: Prisma.DepartmentUpsertWithoutCategoriesInput
+  connect?: Prisma.DepartmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DepartmentUpdateToOneWithWhereWithoutCategoriesInput, Prisma.DepartmentUpdateWithoutCategoriesInput>, Prisma.DepartmentUncheckedUpdateWithoutCategoriesInput>
+}
+
 export type DepartmentCreateNestedOneWithoutChildrenInput = {
   create?: Prisma.XOR<Prisma.DepartmentCreateWithoutChildrenInput, Prisma.DepartmentUncheckedCreateWithoutChildrenInput>
   connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutChildrenInput
@@ -441,14 +467,6 @@ export type DepartmentUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.DepartmentScalarWhereInput | Prisma.DepartmentScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DepartmentUncheckedUpdateManyWithoutParentNestedInput = {
   create?: Prisma.XOR<Prisma.DepartmentCreateWithoutParentInput, Prisma.DepartmentUncheckedCreateWithoutParentInput> | Prisma.DepartmentCreateWithoutParentInput[] | Prisma.DepartmentUncheckedCreateWithoutParentInput[]
   connectOrCreate?: Prisma.DepartmentCreateOrConnectWithoutParentInput | Prisma.DepartmentCreateOrConnectWithoutParentInput[]
@@ -463,12 +481,67 @@ export type DepartmentUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.DepartmentScalarWhereInput | Prisma.DepartmentScalarWhereInput[]
 }
 
+export type DepartmentCreateWithoutCategoriesInput = {
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parent?: Prisma.DepartmentCreateNestedOneWithoutChildrenInput
+  children?: Prisma.DepartmentCreateNestedManyWithoutParentInput
+}
+
+export type DepartmentUncheckedCreateWithoutCategoriesInput = {
+  id?: number
+  name: string
+  isActive?: boolean
+  parentId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.DepartmentUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type DepartmentCreateOrConnectWithoutCategoriesInput = {
+  where: Prisma.DepartmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DepartmentCreateWithoutCategoriesInput, Prisma.DepartmentUncheckedCreateWithoutCategoriesInput>
+}
+
+export type DepartmentUpsertWithoutCategoriesInput = {
+  update: Prisma.XOR<Prisma.DepartmentUpdateWithoutCategoriesInput, Prisma.DepartmentUncheckedUpdateWithoutCategoriesInput>
+  create: Prisma.XOR<Prisma.DepartmentCreateWithoutCategoriesInput, Prisma.DepartmentUncheckedCreateWithoutCategoriesInput>
+  where?: Prisma.DepartmentWhereInput
+}
+
+export type DepartmentUpdateToOneWithWhereWithoutCategoriesInput = {
+  where?: Prisma.DepartmentWhereInput
+  data: Prisma.XOR<Prisma.DepartmentUpdateWithoutCategoriesInput, Prisma.DepartmentUncheckedUpdateWithoutCategoriesInput>
+}
+
+export type DepartmentUpdateWithoutCategoriesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.DepartmentUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.DepartmentUpdateManyWithoutParentNestedInput
+}
+
+export type DepartmentUncheckedUpdateWithoutCategoriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.DepartmentUncheckedUpdateManyWithoutParentNestedInput
+}
+
 export type DepartmentCreateWithoutChildrenInput = {
   name: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   parent?: Prisma.DepartmentCreateNestedOneWithoutChildrenInput
+  categories?: Prisma.CategoryDepartmentCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutChildrenInput = {
@@ -478,6 +551,7 @@ export type DepartmentUncheckedCreateWithoutChildrenInput = {
   parentId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  categories?: Prisma.CategoryDepartmentUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutChildrenInput = {
@@ -491,6 +565,7 @@ export type DepartmentCreateWithoutParentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.DepartmentCreateNestedManyWithoutParentInput
+  categories?: Prisma.CategoryDepartmentCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutParentInput = {
@@ -500,6 +575,7 @@ export type DepartmentUncheckedCreateWithoutParentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.DepartmentUncheckedCreateNestedManyWithoutParentInput
+  categories?: Prisma.CategoryDepartmentUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutParentInput = {
@@ -528,6 +604,7 @@ export type DepartmentUpdateWithoutChildrenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.DepartmentUpdateOneWithoutChildrenNestedInput
+  categories?: Prisma.CategoryDepartmentUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutChildrenInput = {
@@ -537,6 +614,7 @@ export type DepartmentUncheckedUpdateWithoutChildrenInput = {
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  categories?: Prisma.CategoryDepartmentUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUpsertWithWhereUniqueWithoutParentInput = {
@@ -580,6 +658,7 @@ export type DepartmentUpdateWithoutParentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.DepartmentUpdateManyWithoutParentNestedInput
+  categories?: Prisma.CategoryDepartmentUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutParentInput = {
@@ -589,6 +668,7 @@ export type DepartmentUncheckedUpdateWithoutParentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.DepartmentUncheckedUpdateManyWithoutParentNestedInput
+  categories?: Prisma.CategoryDepartmentUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateManyWithoutParentInput = {
@@ -606,10 +686,12 @@ export type DepartmentUncheckedUpdateManyWithoutParentInput = {
 
 export type DepartmentCountOutputType = {
   children: number
+  categories: number
 }
 
 export type DepartmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | DepartmentCountOutputTypeCountChildrenArgs
+  categories?: boolean | DepartmentCountOutputTypeCountCategoriesArgs
 }
 
 /**
@@ -629,6 +711,13 @@ export type DepartmentCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.T
   where?: Prisma.DepartmentWhereInput
 }
 
+/**
+ * DepartmentCountOutputType without action
+ */
+export type DepartmentCountOutputTypeCountCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CategoryDepartmentWhereInput
+}
+
 
 export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -639,6 +728,7 @@ export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedAt?: boolean
   parent?: boolean | Prisma.Department$parentArgs<ExtArgs>
   children?: boolean | Prisma.Department$childrenArgs<ExtArgs>
+  categories?: boolean | Prisma.Department$categoriesArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["department"]>
 
@@ -657,6 +747,7 @@ export type DepartmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type DepartmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   parent?: boolean | Prisma.Department$parentArgs<ExtArgs>
   children?: boolean | Prisma.Department$childrenArgs<ExtArgs>
+  categories?: boolean | Prisma.Department$categoriesArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -665,6 +756,7 @@ export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     parent: Prisma.$DepartmentPayload<ExtArgs> | null
     children: Prisma.$DepartmentPayload<ExtArgs>[]
+    categories: Prisma.$CategoryDepartmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1015,6 +1107,7 @@ export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   parent<T extends Prisma.Department$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$parentArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.Department$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  categories<T extends Prisma.Department$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CategoryDepartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1437,6 +1530,30 @@ export type Department$childrenArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.DepartmentScalarFieldEnum | Prisma.DepartmentScalarFieldEnum[]
+}
+
+/**
+ * Department.categories
+ */
+export type Department$categoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CategoryDepartment
+   */
+  select?: Prisma.CategoryDepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CategoryDepartment
+   */
+  omit?: Prisma.CategoryDepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoryDepartmentInclude<ExtArgs> | null
+  where?: Prisma.CategoryDepartmentWhereInput
+  orderBy?: Prisma.CategoryDepartmentOrderByWithRelationInput | Prisma.CategoryDepartmentOrderByWithRelationInput[]
+  cursor?: Prisma.CategoryDepartmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CategoryDepartmentScalarFieldEnum | Prisma.CategoryDepartmentScalarFieldEnum[]
 }
 
 /**

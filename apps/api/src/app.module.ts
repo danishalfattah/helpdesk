@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AgentModule } from './agent/agent.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { CategoryModule } from './category/category.module.js';
 import { DepartmentModule } from './department/department.module.js';
@@ -13,6 +14,7 @@ import { RoleModule } from './role/role.module.js';
       envFilePath: ['../../.env'],
     }),
     PrismaModule,
+    AgentModule,
     AuthModule,
     CategoryModule,
     DepartmentModule,
