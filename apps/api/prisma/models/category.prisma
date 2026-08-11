@@ -1,0 +1,36 @@
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.NVarChar(128)
+  isActive  Boolean  @default(true)
+  parentId  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Self-relation 3 tingkat. Kedalaman ditegakkan di CategoryService, bukan
+  // di schema, sama seperti Department — Prisma tidak bisa menyatakan batas
+  // kedalaman secara deklaratif.
+  //
+  // Nama TIDAK dibuat @unique global maupun lewat composite unique index:
+  // SQL Server cuma boleh 1 baris NULL per constraint unique (lihat ADR-002),
+  // dan parentId di sini boleh NULL (kategori tingkat atas). Jadi keunikan
+  // nama antar-saudara ditegakkan di CategoryService, bukan di schema.
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children Category[] @relation("CategoryHierarchy")
+
+  departments CategoryDepartment[]
+
+  @@index([parentId])
+}
+
+// Batasan: kategori ini cuma boleh dipakai tiket dari department yang terdaftar
+// di sini. Kalau tidak ada baris sama sekali, artinya kategori berlaku untuk
+// semua department (aturan ditegakkan di service, bukan di sini).
+model CategoryDepartment {
+  categoryId   Int
+  departmentId Int
+
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([categoryId, departmentId])
+}
