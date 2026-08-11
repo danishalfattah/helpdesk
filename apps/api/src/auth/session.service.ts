@@ -5,6 +5,16 @@ import { PrismaService } from '../prisma/prisma.service.js';
 export const SESSION_COOKIE = 'helpdesk_session';
 export const SESSION_TTL_MENIT = 30;
 
+// Dipakai bareng oleh login (set cookie awal) dan PermissionGuard (refresh
+// cookie tiap request) supaya durasinya tidak pernah berbeda di dua tempat.
+export const sessionCookieOptions = {
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  secure: false, // di produksi (HTTPS) ubah jadi true
+  maxAge: SESSION_TTL_MENIT * 60_000,
+  path: '/',
+};
+
 @Injectable()
 export class SessionService {
   constructor(private readonly prisma: PrismaService) {}
