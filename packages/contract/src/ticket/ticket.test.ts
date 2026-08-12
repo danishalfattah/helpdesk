@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CreateTicketRequest, UpdateTicketRequest } from './ticket.js';
+import { AssignTicketRequest, CreateTicketRequest, UpdateTicketRequest } from './ticket.js';
 
 const dasar = {
   subject: 'Laptop tidak bisa nyala',
@@ -71,5 +71,19 @@ describe('UpdateTicketRequest', () => {
   it('tidak menerima assigneeId — penugasan adalah aksi terpisah', () => {
     const hasil = UpdateTicketRequest.parse({ assigneeId: 5 } as never);
     expect(hasil).not.toHaveProperty('assigneeId');
+  });
+});
+
+describe('AssignTicketRequest', () => {
+  it('menerima agentId angka positif', () => {
+    expect(AssignTicketRequest.safeParse({ agentId: 1 }).success).toBe(true);
+  });
+
+  it('menolak agentId bukan angka', () => {
+    expect(AssignTicketRequest.safeParse({ agentId: 'satu' }).success).toBe(false);
+  });
+
+  it('menolak tanpa agentId', () => {
+    expect(AssignTicketRequest.safeParse({}).success).toBe(false);
   });
 });

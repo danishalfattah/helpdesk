@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UsePipes } from '@nestjs/common';
 import {
+  AssignTicketRequest,
   CreateTicketRequest,
   UpdateTicketRequest,
   type CreateTicketResponse,
@@ -46,5 +47,16 @@ export class TicketController {
   @RequirePermission('ticket.edit')
   async reopen(@Param('id', ParseIntPipe) id: number, @CurrentAgent() agent: { id: number }): Promise<UpdateTicketResponse> {
     return { ticket: await this.tickets.reopen(id, agent.id) };
+  }
+
+  @Post(':id/assign')
+  @RequirePermission('ticket.edit')
+  @UsePipes(new ZodValidationPipe(AssignTicketRequest))
+  async assign(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentAgent() agent: { id: number },
+    @Body() body: AssignTicketRequest,
+  ): Promise<UpdateTicketResponse> {
+    return { ticket: await this.tickets.assign(id, agent.id, body.agentId) };
   }
 }

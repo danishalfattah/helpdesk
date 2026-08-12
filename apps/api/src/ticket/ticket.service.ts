@@ -11,6 +11,7 @@ const NOMOR_TIKET_AWAL = 1000015;
 
 const STATUS_AWAL = 'New';
 const STATUS_REOPEN = 'Re-Opened';
+const STATUS_OPEN = 'Open';
 const PRIORITY_DEFAULT = 'Medium';
 
 @Injectable()
@@ -146,6 +147,42 @@ export class TicketService {
     return hasil;
   }
 
+  // Penugasan tiket (spec §8.3). Tiket berstatus default ("New") yang
+  // ditugaskan otomatis pindah ke "Open" — status lain (sudah Open, Work In
+  // Progress, dst.) tidak diutak-atik, cuma assignee-nya yang berubah.
+  async assign(id: number, agentId: number, targetAgentId: number): Promise<TicketDto> {
+    const tiket = await this.ambilTiketDenganStatus(id);
+    if (tiket.status.isClosed) {
+      throw new DomainError(ErrorCode.TICKET_CLOSED, 'Tiket sudah ditutup. Buka kembali sebelum membalas.', 409);
+    }
+
+    const target = await this.prisma.agent.findUnique({ where: { id: targetAgentId } });
+    if (!target || !target.isActive) {
+      throw new DomainError(ErrorCode.AGENT_NOT_FOUND, 'Agent tidak ditemukan atau sudah nonaktif.', 404);
+    }
+
+    const assigneeLama = tiket.assigneeId != null ? await this.prisma.agent.findUnique({ where: { id: tiket.assigneeId } }) : null;
+
+    const statusAwal = await this.statusAwalId();
+    let statusBaru: { id: number; name: string } | undefined;
+    if (tiket.statusId === statusAwal) {
+      statusBaru = await this.statusByName(STATUS_OPEN);
+    }
+
+    const hasil = await this.prisma.ticket.update({
+      where: { id },
+      data: { assigneeId: target.id, ...(statusBaru !== undefined ? { statusId: statusBaru.id } : {}) },
+    });
+
+    // Jejak audit SETELAH update berhasil, sama seperti update()/reopen().
+    await this.threadEvents.record(id, agentId, 'assignee_changed', assigneeLama?.name ?? null, target.name);
+    if (statusBaru !== undefined) {
+      await this.threadEvents.record(id, agentId, 'status_changed', tiket.status.name, statusBaru.name);
+    }
+
+    return hasil;
+  }
+
   private async ambilTiketDenganStatus(id: number) {
     const tiket = await this.prisma.ticket.findUnique({ where: { id }, include: { status: true } });
     if (!tiket) throw new DomainError(ErrorCode.TICKET_NOT_FOUND, 'Tiket tidak ditemukan.', 404);
@@ -155,6 +192,12 @@ export class TicketService {
   private async pastikanStatusAda(id: number) {
     const status = await this.prisma.ticketStatus.findUnique({ where: { id } });
     if (!status) throw new DomainError(ErrorCode.TICKET_STATUS_NOT_FOUND, 'Status tiket tidak ditemukan.', 404);
+    return status;
+  }
+
+  private async statusByName(name: string): Promise<{ id: number; name: string }> {
+    const status = await this.prisma.ticketStatus.findUnique({ where: { name } });
+    if (!status) throw new DomainError(ErrorCode.TICKET_STATUS_NOT_FOUND, `Status "${name}" belum di-seed.`, 500);
     return status;
   }
 

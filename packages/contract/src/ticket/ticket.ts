@@ -72,3 +72,8 @@ export type UpdateTicketRequest = z.infer<typeof UpdateTicketRequest>;
 
 export const UpdateTicketResponse = z.object({ ticket: TicketDto });
 export type UpdateTicketResponse = z.infer<typeof UpdateTicketResponse>;
+
+export const AssignTicketRequest = z.object({
+  agentId: z.number().int().positive(),
+});
+export type AssignTicketRequest = z.infer<typeof AssignTicketRequest>;

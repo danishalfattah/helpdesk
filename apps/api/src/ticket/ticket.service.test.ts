@@ -11,6 +11,7 @@ function buatPrismaPalsu() {
     priority: { findUnique: vi.fn() },
     ticketStatus: { findUnique: vi.fn() },
     requester: { upsert: vi.fn() },
+    agent: { findUnique: vi.fn() },
   };
 }
 
@@ -249,6 +250,86 @@ describe('TicketService', () => {
 
       expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { statusId: 5, closedAt: null } });
       expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'status_changed', 'Resolved', 'Re-Opened');
+    });
+  });
+
+  describe('assign', () => {
+    it('menugaskan tiket ke agent yang aktif, tanpa mengubah status kalau bukan status default', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(
+        tiketTerbuka({ statusId: 6, status: { id: 6, name: 'Work In Progress', isClosed: false, sortOrder: 3 } }),
+      );
+      prisma.agent.findUnique.mockResolvedValueOnce({ id: 20, name: 'Citra', isActive: true });
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ assigneeId: 20 }));
+
+      const hasil = await service.assign(1, 7, 20);
+
+      expect(hasil.assigneeId).toBe(20);
+      expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { assigneeId: 20 } });
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'assignee_changed', null, 'Citra');
+      expect(threadEvents.record).toHaveBeenCalledTimes(1);
+    });
+
+    it('memindahkan status ke Open kalau tiket masih berstatus default (New)', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      prisma.agent.findUnique.mockResolvedValueOnce({ id: 20, name: 'Citra', isActive: true });
+      prisma.ticketStatus.findUnique
+        .mockResolvedValueOnce({ id: 2, name: 'New', isClosed: false, sortOrder: 1 }) // statusAwalId()
+        .mockResolvedValueOnce({ id: 5, name: 'Open', isClosed: false, sortOrder: 2 }); // statusByName('Open')
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ assigneeId: 20, statusId: 5 }));
+
+      await service.assign(1, 7, 20);
+
+      expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { assigneeId: 20, statusId: 5 } });
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'assignee_changed', null, 'Citra');
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'status_changed', 'New', 'Open');
+    });
+
+    it('mencatat nama assignee lama di ThreadEvent saat reassign ke orang lain', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(
+        tiketTerbuka({
+          statusId: 6,
+          status: { id: 6, name: 'Work In Progress', isClosed: false, sortOrder: 3 },
+          assigneeId: 15,
+        }),
+      );
+      prisma.agent.findUnique
+        .mockResolvedValueOnce({ id: 20, name: 'Citra', isActive: true }) // target
+        .mockResolvedValueOnce({ id: 15, name: 'Doni', isActive: true }); // assignee lama
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ assigneeId: 20 }));
+
+      await service.assign(1, 7, 20);
+
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'assignee_changed', 'Doni', 'Citra');
+    });
+
+    it('menolak assign ke agent yang tidak ada', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      prisma.agent.findUnique.mockResolvedValueOnce(null);
+
+      await expect(service.assign(1, 7, 99)).rejects.toMatchObject({ code: ErrorCode.AGENT_NOT_FOUND });
+      expect(prisma.ticket.update).not.toHaveBeenCalled();
+    });
+
+    it('menolak assign ke agent yang nonaktif', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
+      prisma.agent.findUnique.mockResolvedValueOnce({ id: 20, name: 'Citra', isActive: false });
+
+      await expect(service.assign(1, 7, 20)).rejects.toMatchObject({ code: ErrorCode.AGENT_NOT_FOUND });
+      expect(prisma.ticket.update).not.toHaveBeenCalled();
+    });
+
+    it('menolak assign tiket yang sudah closed', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(
+        tiketTerbuka({ status: { id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 } }),
+      );
+
+      await expect(service.assign(1, 7, 20)).rejects.toMatchObject({ code: ErrorCode.TICKET_CLOSED });
+      expect(prisma.ticket.update).not.toHaveBeenCalled();
+    });
+
+    it('menolak assign kalau tiket tidak ada', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(null);
+      await expect(service.assign(99, 7, 20)).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_FOUND });
     });
   });
 });
