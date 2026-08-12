@@ -23,6 +23,7 @@ import {
   type CreateAgentRequest as CreateReq,
   UpdateAgentRequest,
   type UpdateAgentRequest as UpdateReq,
+  type UpdateAgentResponse,
 } from '@helpdesk/contract';
 import { apiFetch, ApiError } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -85,8 +86,19 @@ function FormTambahAgent({
     formState: { errors },
   } = useForm<CreateReq>({ resolver: zodResolver(CreateAgentRequest) });
 
+  // roleIds dikelola terpisah dari react-hook-form, bukan lewat register().
+  // Checkbox HTML senama selalu memberi string ke RHF, dan setValueAs tidak
+  // sempat jalan sebelum zodResolver membaca nilai mentahnya saat submit —
+  // roleIds selalu ditolak sebagai "expected number, received string" tanpa
+  // pesan error yang tertampil (submit terlihat seperti tidak terjadi apa-apa).
+  const [roleIds, setRoleIds] = useState<number[]>([]);
+
+  function toggleRole(id: number) {
+    setRoleIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit((data) => onSubmit({ ...data, roleIds }))} className="space-y-4">
       <div className="space-y-1">
         <Label htmlFor="agent-email">Email</Label>
         <Input id="agent-email" type="email" {...register('email')} placeholder="nama@socfindo.co.id" />
@@ -113,11 +125,9 @@ function FormTambahAgent({
               <label key={r.id} className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
                   type="checkbox"
-                  value={r.id}
                   className="rounded"
-                  {...register('roleIds', {
-                    setValueAs: (v: string[]) => v?.map(Number) ?? [],
-                  })}
+                  checked={roleIds.includes(r.id)}
+                  onChange={() => toggleRole(r.id)}
                 />
                 {r.name}
               </label>
@@ -327,10 +337,10 @@ export default function HalamanAgen() {
     try {
       const [resAgents, resRoles] = await Promise.all([
         apiFetch<{ agents: AgentDto[] }>('/agents'),
-        apiFetch<{ roles: Array<{ id: number; name: string }> }>('/roles'),
+        apiFetch<Array<{ id: number; name: string }>>('/roles'),
       ]);
       setAgents(resAgents.agents);
-      setRoleOptions(resRoles.roles);
+      setRoleOptions(resRoles);
     } catch {
       setErrorMuat('Gagal memuat data. Coba lagi.');
     } finally {
@@ -380,11 +390,13 @@ export default function HalamanAgen() {
 
   async function handleToggleAktif(agent: AgentDto) {
     try {
-      await apiFetch(`/agents/${agent.id}`, {
+      // Tempel langsung baris yang berubah dari response PATCH, bukan muat()
+      // ulang seluruh daftar — supaya toggle terasa instan tanpa kedip "Memuat…".
+      const res = await apiFetch<UpdateAgentResponse>(`/agents/${agent.id}`, {
         method: 'PATCH',
         body: JSON.stringify({ isActive: !agent.isActive }),
       });
-      await muat();
+      setAgents((prev) => prev.map((a) => (a.id === agent.id ? res.agent : a)));
     } catch (e) {
       alert(e instanceof ApiError ? e.message : 'Gagal mengubah status.');
     }
@@ -394,11 +406,21 @@ export default function HalamanAgen() {
 
   async function handleAssignRole(agentId: number, roleId: number) {
     try {
+      // Endpoint ini cuma balas { ok: true }, bukan agent terbaru — role-nya
+      // ditempel dari roleOptions yang sudah ada di memori, tanpa muat() ulang.
       await apiFetch(`/agents/${agentId}/roles`, {
         method: 'POST',
         body: JSON.stringify({ roleId }),
       });
-      await muat();
+      const role = roleOptions.find((r) => r.id === roleId);
+      if (!role) return;
+      setAgents((prev) =>
+        prev.map((a) =>
+          a.id === agentId && !a.roles.some((r) => r.id === roleId)
+            ? { ...a, roles: [...a.roles, role] }
+            : a,
+        ),
+      );
     } catch (e) {
       alert(e instanceof ApiError ? e.message : 'Gagal menambah role.');
     }
@@ -409,7 +431,9 @@ export default function HalamanAgen() {
   async function handleHapusRole(agentId: number, roleId: number) {
     try {
       await apiFetch(`/agents/${agentId}/roles/${roleId}`, { method: 'DELETE' });
-      await muat();
+      setAgents((prev) =>
+        prev.map((a) => (a.id === agentId ? { ...a, roles: a.roles.filter((r) => r.id !== roleId) } : a)),
+      );
     } catch (e) {
       alert(e instanceof ApiError ? e.message : 'Gagal menghapus role.');
     }
