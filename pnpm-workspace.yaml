@@ -2,11 +2,16 @@ packages:
   - 'apps/*'
   - 'packages/*'
 # Paket yang boleh menjalankan build script (kompilasi native) saat install.
-# Kelimanya sengaja kita pilih dan versinya sudah diverifikasi (spec §3) --
+# Yang bernilai true sengaja kita pilih dan versinya sudah diverifikasi (spec §3) --
 # bukan dependency asing, jadi aman diizinkan.
 allowBuilds:
   '@prisma/engines': true
   '@swc/core': true
   argon2: true
   esbuild: true
+  # Skrip ini cuma untuk men-generate public/mockServiceWorker.js (mocking di
+  # browser). Test kita cuma pakai msw/node (setupServer), jadi tidak perlu.
+  msw: false
   prisma: true
+minimumReleaseAgeExclude:
+  - '@testing-library/user-event@14.6.4'
