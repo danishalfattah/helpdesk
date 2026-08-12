@@ -10,6 +10,7 @@ import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { PermissionGuard } from '../auth/permission.guard.js';
 import { RequirePermission } from '../auth/require-permission.decorator.js';
 import { TicketService } from './ticket.service.js';
+import { CurrentAgent } from '../auth/current-agent.decorator.js';
 
 // Route baca terbuka untuk semua agent yang login, sama seperti Department/Category
 // — daftar/detail tiket dipakai luas, bukan cuma yang berwenang mengelola.
@@ -35,14 +36,15 @@ export class TicketController {
   @UsePipes(new ZodValidationPipe(UpdateTicketRequest))
   async update(
     @Param('id', ParseIntPipe) id: number,
+    @CurrentAgent() agent: { id: number },
     @Body() body: UpdateTicketRequest,
   ): Promise<UpdateTicketResponse> {
-    return { ticket: await this.tickets.update(id, body) };
+    return { ticket: await this.tickets.update(id, agent.id, body) };
   }
 
   @Post(':id/reopen')
   @RequirePermission('ticket.edit')
-  async reopen(@Param('id', ParseIntPipe) id: number): Promise<UpdateTicketResponse> {
-    return { ticket: await this.tickets.reopen(id) };
+  async reopen(@Param('id', ParseIntPipe) id: number, @CurrentAgent() agent: { id: number }): Promise<UpdateTicketResponse> {
+    return { ticket: await this.tickets.reopen(id, agent.id) };
   }
 }

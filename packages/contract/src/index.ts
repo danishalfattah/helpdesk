@@ -13,3 +13,4 @@ export * from './ticket-status/ticket-status.js';
 export * from './priority/priority.js';
 export * from './ticket/ticket.js';
 export * from './thread-entry/thread-entry.js';
+export * from './thread-event/thread-event.js';

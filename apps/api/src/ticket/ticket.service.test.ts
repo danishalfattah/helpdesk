@@ -14,6 +14,10 @@ function buatPrismaPalsu() {
   };
 }
 
+function buatThreadEventsPalsu() {
+  return { record: vi.fn() };
+}
+
 const tiketTerbuka = (over: Record<string, unknown> = {}) => ({
   id: 1,
   number: 1000015,
@@ -38,11 +42,13 @@ const inputDasar = {
 
 describe('TicketService', () => {
   let prisma: ReturnType<typeof buatPrismaPalsu>;
+  let threadEvents: ReturnType<typeof buatThreadEventsPalsu>;
   let service: TicketService;
 
   beforeEach(() => {
     prisma = buatPrismaPalsu();
-    service = new TicketService(prisma as never);
+    threadEvents = buatThreadEventsPalsu();
+    service = new TicketService(prisma as never, threadEvents as never);
 
     prisma.department.findUnique.mockResolvedValue({ id: 1, name: 'IT', isActive: true, parentId: null });
     prisma.requester.upsert.mockResolvedValue({ id: 10, email: inputDasar.requesterEmail, name: 'Budi' });
@@ -163,33 +169,50 @@ describe('TicketService', () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(
         tiketTerbuka({ status: { id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 } }),
       );
-      await expect(service.update(1, { subject: 'Ganti subjek' })).rejects.toMatchObject({
+      await expect(service.update(1, 7, { subject: 'Ganti subjek' })).rejects.toMatchObject({
         code: ErrorCode.TICKET_CLOSED,
       });
       expect(prisma.ticket.update).not.toHaveBeenCalled();
     });
 
-    it('mengubah subjek tiket yang masih terbuka', async () => {
+    it('mengubah subjek tiket yang masih terbuka, tanpa mencatat ThreadEvent', async () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
       prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ subject: 'Ganti subjek' }));
 
-      const hasil = await service.update(1, { subject: 'Ganti subjek' });
+      const hasil = await service.update(1, 7, { subject: 'Ganti subjek' });
 
       expect(hasil.subject).toBe('Ganti subjek');
       expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { subject: 'Ganti subjek' } });
+      expect(threadEvents.record).not.toHaveBeenCalled();
     });
 
-    it('set closedAt otomatis saat status dipindah ke status yang isClosed', async () => {
+    it('set closedAt otomatis DAN mencatat ThreadEvent status_changed saat status berubah', async () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
-      prisma.ticketStatus.findUnique.mockResolvedValueOnce({ id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 });
+      prisma.ticketStatus.findUnique
+        .mockResolvedValueOnce({ id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 }) // pastikanStatusAda
+        .mockResolvedValueOnce({ id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 }); // ambil nama buat event
       prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ statusId: 8 }));
 
-      await service.update(1, { statusId: 8 });
+      await service.update(1, 7, { statusId: 8 });
 
       expect(prisma.ticket.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { statusId: 8, closedAt: expect.any(Date) },
       });
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'status_changed', 'New', 'Resolved');
+    });
+
+    it('mencatat ThreadEvent department_changed saat department berubah', async () => {
+      prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka({ departmentId: 1 }));
+      prisma.department.findUnique
+        .mockResolvedValueOnce({ id: 2, name: 'HR', isActive: true, parentId: null }) // pastikanDepartmentAda (baru)
+        .mockResolvedValueOnce({ id: 1, name: 'IT', isActive: true, parentId: null }) // deptLama
+        .mockResolvedValueOnce({ id: 2, name: 'HR', isActive: true, parentId: null }); // deptBaru
+      prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ departmentId: 2 }));
+
+      await service.update(1, 7, { departmentId: 2 });
+
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'department_changed', 'IT', 'HR');
     });
 
     it('menolak categoryId baru yang scoping-nya tidak cocok dengan department tiket', async () => {
@@ -197,34 +220,35 @@ describe('TicketService', () => {
       prisma.category.findUnique.mockResolvedValueOnce({ id: 5, name: 'Jaringan', isActive: true, parentId: null });
       prisma.categoryDepartment.findMany.mockResolvedValueOnce([{ categoryId: 5, departmentId: 2 }]);
 
-      await expect(service.update(1, { categoryId: 5 })).rejects.toMatchObject({
+      await expect(service.update(1, 7, { categoryId: 5 })).rejects.toMatchObject({
         code: ErrorCode.TICKET_CATEGORY_NOT_ALLOWED,
       });
     });
 
     it('menolak update kalau tiket tidak ada', async () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(null);
-      await expect(service.update(99, { subject: 'x' })).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_FOUND });
+      await expect(service.update(99, 7, { subject: 'x' })).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_FOUND });
     });
   });
 
   describe('reopen', () => {
     it('menolak reopen kalau tiket belum closed', async () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(tiketTerbuka());
-      await expect(service.reopen(1)).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_CLOSED });
+      await expect(service.reopen(1, 7)).rejects.toMatchObject({ code: ErrorCode.TICKET_NOT_CLOSED });
       expect(prisma.ticket.update).not.toHaveBeenCalled();
     });
 
-    it('memindahkan status ke Re-Opened dan mengosongkan closedAt', async () => {
+    it('memindahkan status ke Re-Opened, mengosongkan closedAt, dan mencatat ThreadEvent', async () => {
       prisma.ticket.findUnique.mockResolvedValueOnce(
         tiketTerbuka({ status: { id: 8, name: 'Resolved', isClosed: true, sortOrder: 8 } }),
       );
       prisma.ticketStatus.findUnique.mockResolvedValueOnce({ id: 5, name: 'Re-Opened', isClosed: false, sortOrder: 5 });
       prisma.ticket.update.mockResolvedValueOnce(tiketTerbuka({ statusId: 5 }));
 
-      await service.reopen(1);
+      await service.reopen(1, 7);
 
       expect(prisma.ticket.update).toHaveBeenCalledWith({ where: { id: 1 }, data: { statusId: 5, closedAt: null } });
+      expect(threadEvents.record).toHaveBeenCalledWith(1, 7, 'status_changed', 'Resolved', 'Re-Opened');
     });
   });
 });

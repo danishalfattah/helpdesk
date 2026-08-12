@@ -9,6 +9,7 @@ import { PriorityModule } from './priority/priority.module.js';
 import { RoleModule } from './role/role.module.js';
 import { TicketModule } from './ticket/ticket.module.js';
 import { ThreadEntryModule } from './thread-entry/thread-entry.module.js';
+import { ThreadEventModule } from './thread-event/thread-event.module.js';
 import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
 
 @Module({
@@ -26,6 +27,7 @@ import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
     PriorityModule,
     TicketModule,
     ThreadEntryModule,
+    ThreadEventModule,
     TicketStatusModule,
   ],
 })
