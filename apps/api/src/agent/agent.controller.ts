@@ -50,20 +50,18 @@ export class AgentController {
 
   @Patch(':id')
   @RequirePermission('agent.manage')
-  @UsePipes(new ZodValidationPipe(UpdateAgentRequest))
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateAgentRequest,
+    @Body(new ZodValidationPipe(UpdateAgentRequest)) body: UpdateAgentRequest,
   ): Promise<UpdateAgentResponse> {
     return { agent: await this.agents.update(id, body) };
   }
 
   @Post(':id/roles')
   @RequirePermission('agent.manage')
-  @UsePipes(new ZodValidationPipe(AssignAgentRoleRequest))
   async assignRole(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: AssignAgentRoleRequest,
+    @Body(new ZodValidationPipe(AssignAgentRoleRequest)) body: AssignAgentRoleRequest,
   ): Promise<{ ok: true }> {
     await this.agents.assignRole(id, body.roleId);
     return { ok: true };

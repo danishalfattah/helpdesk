@@ -20,6 +20,7 @@ const PERMISSIONS = [
   { key: 'department.manage', label: 'Kelola department' },
   { key: 'category.manage', label: 'Kelola kategori' },
   { key: 'agent.manage', label: 'Kelola agent' },
+  { key: 'role.manage', label: 'Kelola role' },
 ];
 
 async function main(): Promise<void> {
