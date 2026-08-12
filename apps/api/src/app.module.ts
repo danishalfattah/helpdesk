@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { PriorityModule } from './priority/priority.module.js';
 import { RoleModule } from './role/role.module.js';
 import { TicketModule } from './ticket/ticket.module.js';
+import { ThreadEntryModule } from './thread-entry/thread-entry.module.js';
 import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
 
 @Module({
@@ -24,6 +25,7 @@ import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
     RoleModule,
     PriorityModule,
     TicketModule,
+    ThreadEntryModule,
     TicketStatusModule,
   ],
 })
