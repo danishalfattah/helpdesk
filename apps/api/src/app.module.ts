@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AgentModule } from './agent/agent.module.js';
+import { AttachmentModule } from './attachment/attachment.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { CategoryModule } from './category/category.module.js';
 import { DepartmentModule } from './department/department.module.js';
@@ -20,6 +21,7 @@ import { TicketStatusModule } from './ticket-status/ticket-status.module.js';
     }),
     PrismaModule,
     AgentModule,
+    AttachmentModule,
     AuthModule,
     CategoryModule,
     DepartmentModule,
