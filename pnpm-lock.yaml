@@ -78,6 +78,9 @@ importers:
       '@types/mssql':
         specifier: ^9.1.5
         version: 9.1.11(supports-color@8.1.1)
+      '@types/multer':
+        specifier: ^2.2.0
+        version: 2.2.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -2554,6 +2557,9 @@ packages:
 
   '@types/mssql@9.1.11':
     resolution: {integrity: sha512-vcujgrDbDezCxNDO4KY6gjwduLYOKfrexpRUwhoysRvcXZ3+IgZ/PMYFDgh8c3cQIxZ6skAwYo+H6ibMrBWPjQ==}
+
+  '@types/multer@2.2.0':
+    resolution: {integrity: sha512-3U1troeqGV8Ntp7Q3klwf4zr23VEoqYVocYXaswm9+8z3O9UHDYAqLxjJ/h550iRADTjKdOdhhasXw6gD6kYtg==}
 
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
@@ -7803,6 +7809,10 @@ snapshots:
       tedious: 20.0.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
+
+  '@types/multer@2.2.0':
+    dependencies:
+      '@types/express': 5.0.6
 
   '@types/node@24.13.3':
     dependencies:
